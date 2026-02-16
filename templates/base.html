@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <script defer src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+    <link rel="icon" href="{{ url_for('static', filename='images/logo.png') }}" type="image/png">
+</head>
+<body>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <script>
+            alert("{{ messages[0] }}");
+        </script>
+      {% endif %}
+    {% endwith %}
+   <!-- 3D ROTATING NAVIGATION -->
+    <nav class="rotate-nav">
+    <ul>
+        <li id="nav-1" class="nav-item active">
+        <a href="{{ url_for('home') }}" aria-label="Home">
+            <div class="home-icon">
+            <div class="roof">
+                <div class="roof-edge"></div>
+            </div>
+            <div class="front"></div>
+            </div>
+        </a>
+        </li>
+
+        <li id="nav-2" class="nav-item">
+        <a href="{{ url_for('about') }}" aria-label="About">
+            <div class="user-icon">
+            <div class="user-head"></div>
+            <div class="user-body"></div>
+            </div>
+        </a>
+        </li>
+
+        <li id="nav-3" class="nav-item">
+        <a href="{{ url_for('help') }}" aria-label="Help">
+            <div class="help-icon">?</div>
+        </a>
+        </li>
+
+        <li id="nav-4" class="nav-item">
+        <a href="{{ url_for('settings') }}" aria-label="Settings">
+            <div class="settings-icon"></div>
+        </a>
+        </li>
+
+        <li id="nav-5" class="nav-item">
+        <a href="{{ url_for('logout') }}" aria-label="Logout">
+            <div class="logout-icon">
+            <div class="logout-circle"></div>
+            <div class="logout-line"></div>
+            </div>
+        </a>
+        </li>
+
+    </ul>
+    </nav>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>

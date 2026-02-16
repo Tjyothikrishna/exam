@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container mt-4">
+
+    <h2 class="mb-3">Add Questions</h2>
+
+    <div class="alert alert-info">
+        <strong>Question Set:</strong> {{ qset.title }}
+    </div>
+
+    <!-- ===== ADD QUESTION FORM ===== -->
+    <div class="card shadow mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">Create New Question</h5>
+        </div>
+
+        <div class="card-body">
+
+            <form method="POST">
+
+                <!-- QUESTION -->
+                <div class="mb-3">
+                    <label class="form-label">Question Text</label>
+                    <textarea name="question_text"
+                              class="form-control"
+                              rows="3"
+                              required
+                              placeholder="Type your question here..."></textarea>
+                </div>
+
+                <hr>
+
+                <h6 class="mb-3">Options (Choose Correct One)</h6>
+
+                <!-- OPTION 1 -->
+                <div class="mb-2">
+                    <div class="input-group">
+                        <div class="input-group-text">
+                            <input type="radio" name="correct" value="0" required>
+                        </div>
+                        <input type="text"
+                               name="options[]"
+                               class="form-control"
+                               placeholder="Option 1"
+                               required>
+                    </div>
+                </div>
+
+                <!-- OPTION 2 -->
+                <div class="mb-2">
+                    <div class="input-group">
+                        <div class="input-group-text">
+                            <input type="radio" name="correct" value="1">
+                        </div>
+                        <input type="text"
+                               name="options[]"
+                               class="form-control"
+                               placeholder="Option 2"
+                               required>
+                    </div>
+                </div>
+
+                <!-- OPTION 3 -->
+                <div class="mb-2">
+                    <div class="input-group">
+                        <div class="input-group-text">
+                            <input type="radio" name="correct" value="2">
+                        </div>
+                        <input type="text"
+                               name="options[]"
+                               class="form-control"
+                               placeholder="Option 3"
+                               required>
+                    </div>
+                </div>
+
+                <!-- OPTION 4 -->
+                <div class="mb-3">
+                    <div class="input-group">
+                        <div class="input-group-text">
+                            <input type="radio" name="correct" value="3">
+                        </div>
+                        <input type="text"
+                               name="options[]"
+                               class="form-control"
+                               placeholder="Option 4"
+                               required>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary">
+                    Save Question
+                </button>
+
+                <a href="{{ url_for('admin_question_sets') }}"
+                   class="btn btn-outline-secondary">
+                    Back to Question Sets
+                </a>
+
+            </form>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

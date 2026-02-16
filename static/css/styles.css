@@ -1,0 +1,323 @@
+@import url("https://fonts.googleapis.com/css2?family=Nunito&display=swap");
+
+/* ===============================
+   RESET
+================================ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: "Nunito", sans-serif;
+}
+body {
+    font-family: 'Dosis', sans-serif;
+    color: #fff;
+    /* background: linear-gradient(to left, #c6ffdd, #fbd786, #f7797d);  */
+     /* background: linear-gradient(135deg, #000000 40%, #0a1a6b 70%, #ff0000 100%); */
+   /* background: linear-gradient(to right, #000000, #0a1a6b);
+    background: radial-gradient(circle at left, #ff0000 0%, #000000 60%);*/
+    /* background: linear-gradient(135deg, #000000 40%, #0a1a6b 70%, #ff0000 100%);  */
+    background: linear-gradient(135deg, #0a1a6b 40%, #ff0000 100%);
+    margin: 0px;
+    padding: 0px;
+    color: white;
+    min-height: 100vh;
+  }
+
+.container {
+    width: 100%;
+    max-width: 400px;
+    margin: 50px auto;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-left: 140px;
+    padding: 80px;
+}
+
+h2 {
+    margin-bottom: 20px;
+    color: #333;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    color: #555;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+input[type="radio"] {
+    margin-right: 5px;
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    background-color: #5cb85c;
+    border: none;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+button:hover {
+    background-color: #4cae4c;
+}
+
+p {
+    text-align: center;
+    margin-top: 20px;
+}
+
+a {
+    color: #5cb85c;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+input[type="file"] {
+    display: block;
+    margin-bottom: 10px;
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+/* ===============================
+   3D ROTATING NAVIGATION
+================================ */
+nav.rotate-nav {
+  position: fixed;
+  top: 50%;
+  left: 20px;
+  transform: translateY(-50%);
+  z-index: 1000;
+}
+
+nav.rotate-nav ul {
+  list-style: none;
+}
+
+nav.rotate-nav ul li {
+  position: relative;
+  width: 70px;
+  background: crimson;
+  cursor: pointer;
+  transition: transform 0.4s ease;
+}
+
+/* Hover slide */
+nav.rotate-nav ul li:hover {
+  transform: translateX(-70px);
+}
+
+/* Flip label */
+nav.rotate-nav ul li::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 70px;
+  width: 70px;
+  height: 100%;
+  background: #fff;
+  color: crimson;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: perspective(400px) rotateY(90deg);
+  transform-origin: 0 100%;
+  transition: all 0.4s ease;
+}
+
+nav.rotate-nav ul li:hover::after {
+  opacity: 1;
+  transform: perspective(400px) rotateY(0);
+}
+
+/* Label text */
+nav.rotate-nav ul li:nth-child(1)::after { content: "Home"; }
+nav.rotate-nav ul li:nth-child(2)::after { content: "About"; }
+nav.rotate-nav ul li:nth-child(3)::after { content: "Help"; }
+nav.rotate-nav ul li:nth-child(4)::after { content: "Settings"; }
+nav.rotate-nav ul li:nth-child(5)::after { content: "Logout"; }
+
+/* Icon container */
+nav.rotate-nav ul li a {
+  display: block;
+  padding: 18px 0;
+  text-align: center;
+  text-decoration: none;
+}
+
+/* ===============================
+   ICONS (ALL WHITE)
+================================ */
+
+/* HOME */
+.roof {
+  width: 0;
+  height: 0;
+  margin: auto;
+  border-left: 16px solid transparent;
+  border-right: 16px solid transparent;
+  border-bottom: 11px solid #fff;
+  position: relative;
+}
+
+.roof-edge {
+  position: absolute;
+  top: 3px;
+  left: -13px;
+  border-left: 13px solid transparent;
+  border-right: 13px solid transparent;
+  border-bottom: 9px solid #fff;
+}
+
+.front {
+  width: 22px;
+  height: 16px;
+  background: #fff;
+  margin: 6px auto 0;
+  position: relative;
+}
+
+.front::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 7px;
+  width: 8px;
+  height: 10px;
+  background: crimson;
+}
+
+/* ABOUT */
+.user-head {
+  width: 12px;
+  height: 12px;
+  background: #fff;
+  border-radius: 50%;
+  margin: auto;
+}
+
+.user-body {
+  width: 20px;
+  height: 9px;
+  background: #fff;
+  border-radius: 12px 12px 0 0;
+  margin: 4px auto 0;
+}
+
+/* HELP */
+.help-icon {
+  font-size: 20px;
+  font-weight: bold;
+  color: #fff;
+  line-height: 20px;
+}
+
+/* ===============================
+   SETTINGS ICON – GEAR STYLE
+================================ */
+
+.settings-icon {
+  position: relative;
+  width: 18px;
+  height: 18px;
+  margin: auto;
+  border: 2px solid white;
+  border-radius: 50%;
+}
+
+/* Top & Bottom teeth */
+.settings-icon::before {
+  content: "";
+  position: absolute;
+  width: 2px;
+  height: 6px;
+  background: white;
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  box-shadow:
+    0 22px 0 white; /* bottom tooth */
+}
+
+/* Left & Right teeth */
+.settings-icon::after {
+  content: "";
+  position: absolute;
+  width: 6px;
+  height: 2px;
+  background: white;
+  left: -6px;
+  top: 50%;
+  transform: translateY(-50%);
+  box-shadow:
+    22px 0 0 white; /* right tooth */
+}
+
+
+/* LOGOUT */
+.logout-icon {
+  position: relative;
+  width: 18px;
+  height: 18px;
+  margin: auto;
+}
+
+.logout-circle {
+  width: 18px;
+  height: 18px;
+  border: 2px solid #fff;
+  border-radius: 50%;
+}
+
+.logout-line {
+  width: 3px;
+  height: 8px;
+  background: #fff;
+  position: absolute;
+  top: -3px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+@media (min-width: 768px) {
+    .nav-menu {
+        display: flex;
+        position: static;
+        flex-direction: row;
+        background-color: transparent;
+        padding: 0;
+    }
+
+    .nav-menu a {
+        padding: 10px 20px;
+    }
+
+    .hamburger {
+        display: none;
+    }
+}
+@keyframes backgroundShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}

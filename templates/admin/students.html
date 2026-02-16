@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container mt-4">
+
+    <h2 class="mb-4">Student List</h2>
+
+    <div class="card shadow">
+        <div class="card-header bg-dark text-white">
+            <h5 class="mb-0">All Registered Students</h5>
+        </div>
+
+        <div class="card-body p-0">
+
+            {% if students %}
+            <table class="table table-striped mb-0">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Total Attempts</th>
+                        <th>Average Score</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for s in students %}
+                    <tr>
+                        <td>{{ s.id }}</td>
+                        <td>{{ s.first_name }}</td>
+                        <td>{{ s.email }}</td>
+                        <td>{{ s.attempts }}</td>
+                        <td>
+                            {% if s.avg_score %}
+                                {{ s.avg_score }}%
+                            {% else %}
+                                <span class="text-muted">No tests</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{{ url_for('admin_student_detail', user_id=s.id) }}"
+                               class="btn btn-sm btn-primary">
+                                View Details
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            {% else %}
+            <p class="text-center text-muted p-3">
+                No students found.
+            </p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="mt-4 text-center">
+        <a href="{{ url_for('admin_dashboard') }}"
+           class="btn btn-outline-secondary">
+            Back to Dashboard
+        </a>
+    </div>
+
+</div>
+
+{% endblock %}

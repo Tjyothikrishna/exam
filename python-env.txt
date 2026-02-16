@@ -1,0 +1,88 @@
+sudo apt update
+sudo apt install -y python3-full python3-venv
+python3 -m venv venv
+
+Activate the virtual environment
+--------------------------------------
+source venv/bin/activate
+python app.py
+
+
+SQL
+*****************************************
+sudo mysql
+CREATE USER 'elearn'@'localhost' IDENTIFIED BY 'elearn@123';
+GRANT ALL PRIVILEGES ON website.* TO 'elearn'@'localhost';
+FLUSH PRIVILEGES;
+
+MySQL Terminal (BEST)
+Login:  sudo mysql -u elearn -p
+Enter password.
+Use database:  USE website;
+Show tables:   SHOW TABLES;
+View users table:  SELECT * FROM users;
+View videos:   SELECT * FROM videos;
+View progress:  SELECT * FROM user_video_progress;
+
+ phpMyAdmin (Browser)
+sudo apt install phpmyadmin -y
+Access:   http://localhost/phpmyadmin
+Login with:
+Username: elearn
+Password: elearn@123
+
+sudo mysql
+ALTER USER 'phpmyadmin'@'localhost' IDENTIFIED BY 'NewStrongPassword@123';
+FLUSH PRIVILEGES;
+EXIT;
+
+Create the website database (MANDATORY)
+*****************************************
+sudo mysql
+Create the database:    CREATE DATABASE website;
+Verify:  SHOW DATABASES;
+
+Give access to your app user (elearn):
+GRANT ALL PRIVILEGES ON website.* TO 'elearn'@'localhost';
+FLUSH PRIVILEGES;
+EXIT;
+
+sudo mysql -u elearn -p website
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    first_name VARCHAR(100),
+    last_name VARCHAR(100),
+    email VARCHAR(255) UNIQUE,
+    mobile_number VARCHAR(20),
+    password_hash VARCHAR(255),
+    gender VARCHAR(10),
+    profile_picture VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+
+
+1️⃣ Login as app user
+sudo mysql -u elearn -p
+2️⃣ Select DB
+USE website;
+3️⃣ Check users table
+SHOW TABLES;
+SELECT * FROM users;
+
+If later you enable tests, create this table:
+
+CREATE TABLE user_test_results (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    score INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+
+
+Email: admin@site.com
+Password: admin123
+

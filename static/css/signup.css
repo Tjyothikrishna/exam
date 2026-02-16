@@ -1,0 +1,297 @@
+@import url("https://fonts.googleapis.com/css?family=Dosis:600");
+:root {
+  --red: #ff0000;
+  --blue: #0a1a6b;
+  --white: #ffffff;
+  --dark: #333333;
+}
+
+*, *:before, *:after {
+    margin: 0;
+    padding: 0;
+}
+
+/* ----- GENERAL ----- */
+
+body {
+  font-family: 'Dosis', Arial, sans-serif; /* Added fallback fonts */
+  color: white;
+  background: linear-gradient(135deg, var(--blue), var(--red));
+  background-size: 200% 200%; /* For animation */
+  animation: backgroundShift 10s ease infinite;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  margin: 0;
+  padding: 2rem 4rem 4rem 4rem;
+  position: relative;
+  overflow: auto; /* Allow scrolling */
+}
+
+ul, li {
+  margin: 0px;
+  padding: 0px;
+  list-style: none;
+}
+
+
+/* -----------------------------------------------
+MOBILE
+Content of mobile menu
+----------------------------------------------- */
+.mobile {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 10px;
+}
+
+/* -----------------------------------------------
+LABEL
+----------------------------------------------- */
+.mobile__label {
+  margin-top: 2rem;
+  border: solid 2px white;
+  display: inline-block;
+  overflow: hidden;
+  padding: 12px 9px;
+  width: 25px;
+  white-space: nowrap;
+  z-index: 1001;
+}
+
+.mobile__label:hover {
+  cursor: pointer;
+}
+
+/* ANIMATION POSITION ON HOVER */
+.mobile__label:hover .label__line {
+  margin-left: 0px;
+}
+
+/* ANIMATION DELAY */
+.mobile__label:nth-child(2):hover .label__line {
+  transition-delay: .1s;
+}
+
+.mobile__label:nth-child(3):hover .label__line {
+  transition-delay: .2s;
+}
+
+/* LINES CONTENT */
+.mobile__label__content {
+  font-size: 0;
+  line-height: 0;
+  height: 2px;
+  margin-bottom: 5px;
+}
+
+.mobile__label__content:last-child {
+  margin-bottom: 0px;
+}
+
+/* WHITE LINES */
+.label__line {
+  background-color: white;
+  width: 24px;
+  height: 2px;
+  display: inline-block;
+  margin-left: -33px;
+  margin-right: 43px;
+  transition: margin-left .2s linear;
+}
+
+/* -----------------------------------------------
+INPUT
+----------------------------------------------- */
+.mobile__input {
+  display: none;
+}
+
+/* -----------------------------------------------
+NAV
+----------------------------------------------- */
+.mobile__nav {
+  margin-top: 10px;
+  max-height: 0;
+  max-width: 0;
+  overflow: hidden;
+  transition: max-height 1s linear, max-width .8s linear;
+}
+
+.nav__item {
+  white-space: nowrap;
+}
+
+.nav__item a {
+  text-decoration: none;
+  display: block;
+  padding: 5px 0px;
+  color: white;
+}
+
+.nav__item a:after {
+  display: block;
+  width: 15px;
+  height: 2px;
+  background-color: white;
+  content: '';
+}
+
+.mobile__input:checked + .mobile__nav {
+  max-width: 100vw;
+  max-height: 100vh;
+  position: fixed;
+  z-index: 1000;
+  transition: max-height 1s linear, max-width 0.8s linear;
+}
+/* FORM ROW LAYOUT (replaces form-group & form-wrapper) */
+/* ===== FORM ROW LAYOUT (LOGIN STYLE) ===== */
+
+.form-row-total {
+  display: flex;
+  gap: 20px;
+  width: 100%;
+}
+
+.form-row {
+  width: 100%;
+  padding: 10px 0;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Labels (white like login theme) */
+.form-row label {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 6px;
+}
+
+/* Inputs behave like .login__input */
+.form-row input[type="text"],
+.form-row input[type="email"],
+.form-row input[type="password"],
+.form-row input[type="file"] {
+  border: none;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.6);
+  background: transparent;
+  padding: 10px 5px;
+  font-weight: 600;
+  width: 100%;
+  color: white;
+  transition: 0.2s;
+}
+
+.form-row input::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.form-row input:focus {
+  outline: none;
+  border-bottom-color: var(--red);
+}
+
+/* Radio buttons */
+.form-row input[type="radio"] {
+  margin-right: 6px;
+}
+
+.radio-group {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.radio-group label {
+  color: white;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+}
+
+/* Checkbox */
+.form-row.checkbox label {
+  color: white;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Submit button (reuse login style) */
+.button__icon {
+  margin-left: 10px;
+}
+
+.form-row button {
+  background: var(--white);
+  font-size: 14px;
+  margin-top: 20px;
+  padding: 14px 20px;
+  border-radius: 26px;
+  border: none;
+  text-transform: uppercase;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  color: var(--blue);
+  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.4);
+  cursor: pointer;
+  transition: 0.2s;
+  justify-content: center; 
+}
+
+.form-row button:hover {
+  background: #f2f2f2;
+}
+.login__submit {
+  display: flex;
+  align-items: center;
+  justify-content: center;   /* ✅ center text horizontally */
+  text-align: center;        /* ✅ safety */
+}
+/* Wrapper text */
+.container p {
+  text-align: center;
+  margin-top: 16px;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* Login button look */
+.container p a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 8px;
+  padding: 8px 20px;
+  border-radius: 20px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  color: white;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+/* Hover effect */
+.container p a:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 480px) {
+  .form-row-total {
+    flex-direction: column;
+  }
+}
+@keyframes backgroundShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
