@@ -1,4 +1,8 @@
+<<<<<<< codex/create-clean-pr-branch-for-pull-request-sca4k5
+from flask import render_template, request, redirect, flash, url_for, session, jsonify, send_file, make_response, current_app
+=======
 from flask import Flask, render_template, request, redirect, flash, url_for, session, jsonify, send_file, make_response
+>>>>>>> main
 import mysql.connector
 import os, json, random
 import smtplib
@@ -29,6 +33,15 @@ def admin_required(f):
 # ================= FLASK APP =================
 
 
+<<<<<<< codex/create-clean-pr-branch-for-pull-request-sca4k5
+# ================= DATABASE =================
+def get_db_connection():
+    return mysql.connector.connect(
+        host=current_app.config["DB_HOST"],
+        user=current_app.config["DB_USER"],
+        password=current_app.config["DB_PASSWORD"],
+        database=current_app.config["DB_NAME"],
+=======
 # ================= EMAIL CONFIG =================
 EMAIL_USER = "jyothikrishnatunga@gmail.com"
 EMAIL_PASS = "atqn sdbk triq nokq"  
@@ -40,6 +53,7 @@ def get_db_connection():
         user="root",
         password="root123",
         database="website"
+>>>>>>> main
     )
 
 # ================= OTP =================
@@ -52,13 +66,22 @@ def send_otp_email(recipient_email, otp):
     try:
         msg = MIMEText(f'Your OTP for registration is: {otp}')
         msg['Subject'] = 'OTP Verification'
+<<<<<<< codex/create-clean-pr-branch-for-pull-request-sca4k5
+        msg['From'] = current_app.config['EMAIL_USER']
+=======
         msg['From'] = EMAIL_USER
+>>>>>>> main
         msg['To'] = recipient_email
 
         with smtplib.SMTP('smtp.gmail.com', 587) as server:
             server.starttls()
+<<<<<<< codex/create-clean-pr-branch-for-pull-request-sca4k5
+            server.login(current_app.config['EMAIL_USER'], current_app.config['EMAIL_PASS'])
+            server.sendmail(current_app.config['EMAIL_USER'], recipient_email, msg.as_string())
+=======
             server.login(EMAIL_USER, EMAIL_PASS)
             server.sendmail(EMAIL_USER, recipient_email, msg.as_string())
+>>>>>>> main
         return True
     except Exception as e:
         print(f'Failed to send OTP email: {e}')
@@ -910,12 +933,20 @@ def register_routes(app):
 
                 msg = MIMEText(email_body)
                 msg['Subject'] = subject
+<<<<<<< codex/create-clean-pr-branch-for-pull-request-sca4k5
+                msg['From'] = current_app.config['EMAIL_USER']
+=======
                 msg['From'] = EMAIL_USER
+>>>>>>> main
                 msg['To'] = 'support@vstand4usolutions.com'
 
                 with smtplib.SMTP('smtp.gmail.com', 587) as server:
                     server.starttls()
+<<<<<<< codex/create-clean-pr-branch-for-pull-request-sca4k5
+                    server.login(current_app.config['EMAIL_USER'], current_app.config['EMAIL_PASS'])
+=======
                     server.login(EMAIL_USER, EMAIL_PASS)
+>>>>>>> main
                     server.send_message(msg)
 
                 flash('Your message has been sent successfully.', 'success')
