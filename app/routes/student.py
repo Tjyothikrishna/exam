@@ -99,6 +99,7 @@ def submit_test():
     answers = session.get("answers", [])
     question_set_id = session.get("question_set_id")
     save_attempt(current_user.id, question_set_id, questions, answers, session.get("score", 0))
+    save_attempt(session["user_id"], question_set_id, questions, answers, session.get("score", 0))
 
     for key in ["questions", "answers", "score", "current_index", "question_set_id"]:
         session.pop(key, None)
