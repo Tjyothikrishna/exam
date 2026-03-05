@@ -1,3 +1,5 @@
+from collections import OrderedDict
+
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 from flask_login import login_required
 
@@ -18,6 +20,61 @@ def admin_dashboard():
         "total_results": Result.query.count(),
     }
     recent_exams = Exam.query.order_by(Exam.created_at.desc()).limit(5).all()
+
+    results = Result.query.all()
+    exams = Exam.query.all()
+    exam_title_map = {exam.id: exam.title for exam in exams}
+
+    distribution_ranges = OrderedDict([
+        ("0-20", 0),
+        ("21-40", 0),
+        ("41-60", 0),
+        ("61-80", 0),
+        ("81-100", 0),
+    ])
+    for result in results:
+        score = float(result.score or 0)
+        if score <= 20:
+            distribution_ranges["0-20"] += 1
+        elif score <= 40:
+            distribution_ranges["21-40"] += 1
+        elif score <= 60:
+            distribution_ranges["41-60"] += 1
+        elif score <= 80:
+            distribution_ranges["61-80"] += 1
+        else:
+            distribution_ranges["81-100"] += 1
+
+    exam_score_buckets = {}
+    for result in results:
+        exam_score_buckets.setdefault(result.exam_id, []).append(float(result.score or 0))
+
+    avg_exam_labels = []
+    avg_exam_values = []
+    for exam_id, scores in exam_score_buckets.items():
+        avg_exam_labels.append(exam_title_map.get(exam_id, f"Exam {exam_id}"))
+        avg_exam_values.append(round(sum(scores) / len(scores), 2) if scores else 0)
+
+    taken_per_day = OrderedDict()
+    for result in results:
+        day_key = result.submitted_at.strftime("%Y-%m-%d") if result.submitted_at else "Unknown"
+        taken_per_day[day_key] = taken_per_day.get(day_key, 0) + 1
+
+    chart_data = {
+        "distribution_labels": list(distribution_ranges.keys()),
+        "distribution_values": list(distribution_ranges.values()),
+        "avg_exam_labels": avg_exam_labels,
+        "avg_exam_values": avg_exam_values,
+        "daily_labels": list(taken_per_day.keys()),
+        "daily_values": list(taken_per_day.values()),
+    }
+
+    return render_template(
+        "admin/dashboard.html",
+        stats=stats,
+        recent_exams=recent_exams,
+        chart_data=chart_data,
+    )
     return render_template("admin/dashboard.html", stats=stats, recent_exams=recent_exams)
 
 

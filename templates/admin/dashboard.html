@@ -31,6 +31,110 @@
     <div class="col-md-3"><div class="card shadow-sm"><div class="card-body"><div class="text-muted">Total Results</div><div class="h4">{{ stats.total_results }}</div></div></div></div>
   </div>
 
+  <div class="row g-4 mb-4">
+    <div class="col-lg-4">
+      <div class="card shadow-sm h-100">
+        <div class="card-header">Student Score Distribution</div>
+        <div class="card-body"><canvas id="scoreDistributionChart"></canvas></div>
+      </div>
+    </div>
+    <div class="col-lg-4">
+      <div class="card shadow-sm h-100">
+        <div class="card-header">Average Score per Exam</div>
+        <div class="card-body"><canvas id="avgScoreChart"></canvas></div>
+      </div>
+    </div>
+    <div class="col-lg-4">
+      <div class="card shadow-sm h-100">
+        <div class="card-header">Total Exams Taken per Day</div>
+        <div class="card-body"><canvas id="dailyExamsChart"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card shadow-sm">
+    <div class="card-header">Recent Exams</div>
+    <div class="card-body">
+      {% if recent_exams %}
+      <ul class="list-group">
+        {% for exam in recent_exams %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          <span>{{ exam.title }} ({{ exam.duration }} min)</span>
+          <a href="{{ url_for('admin.admin_questions', exam_id=exam.id) }}" class="btn btn-sm btn-primary">Questions</a>
+        </li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <p class="text-muted mb-0">No exams yet.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const chartData = {{ chart_data | tojson }};
+
+  new Chart(document.getElementById('scoreDistributionChart'), {
+    type: 'bar',
+    data: {
+      labels: chartData.distribution_labels,
+      datasets: [{
+        label: 'Students',
+        data: chartData.distribution_values,
+        backgroundColor: 'rgba(54, 162, 235, 0.6)'
+      }]
+    },
+    options: { responsive: true, maintainAspectRatio: false }
+  });
+
+  new Chart(document.getElementById('avgScoreChart'), {
+    type: 'bar',
+    data: {
+      labels: chartData.avg_exam_labels,
+      datasets: [{
+        label: 'Average Score (%)',
+        data: chartData.avg_exam_values,
+        backgroundColor: 'rgba(75, 192, 192, 0.6)'
+      }]
+    },
+    options: { responsive: true, maintainAspectRatio: false }
+  });
+
+  new Chart(document.getElementById('dailyExamsChart'), {
+    type: 'line',
+    data: {
+      labels: chartData.daily_labels,
+      datasets: [{
+        label: 'Exams Taken',
+        data: chartData.daily_values,
+        borderColor: 'rgba(255, 99, 132, 1)',
+        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+        fill: true,
+        tension: 0.25
+      }]
+    },
+    options: { responsive: true, maintainAspectRatio: false }
+  });
+</script>
+    </div>
+  </div>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="alert alert-{{ 'danger' if category == 'error' else category }}">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+  {% endwith %}
+
+  <div class="row g-3 mb-4">
+    <div class="col-md-3"><div class="card shadow-sm"><div class="card-body"><div class="text-muted">Total Students</div><div class="h4">{{ stats.total_students }}</div></div></div></div>
+    <div class="col-md-3"><div class="card shadow-sm"><div class="card-body"><div class="text-muted">Total Exams</div><div class="h4">{{ stats.total_exams }}</div></div></div></div>
+    <div class="col-md-3"><div class="card shadow-sm"><div class="card-body"><div class="text-muted">Total Questions</div><div class="h4">{{ stats.total_questions }}</div></div></div></div>
+    <div class="col-md-3"><div class="card shadow-sm"><div class="card-body"><div class="text-muted">Total Results</div><div class="h4">{{ stats.total_results }}</div></div></div></div>
+  </div>
+
   <div class="card shadow-sm">
     <div class="card-header">Recent Exams</div>
     <div class="card-body">
