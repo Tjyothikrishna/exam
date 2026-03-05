@@ -1,4 +1,10 @@
 Flask
+Flask-Login
+Flask-Bcrypt
+Flask-SQLAlchemy
+Flask-Migrate
+psycopg2-binary
+pytest
 mysql-connector-python
 fpdf
 Pillow
