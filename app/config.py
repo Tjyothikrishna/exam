@@ -12,5 +12,8 @@ class Config:
     DB_PASSWORD = os.getenv("DB_PASSWORD", "root123")
     DB_NAME = os.getenv("DB_NAME", "website")
 
+    SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL", "sqlite:///exam.db")
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+
     SESSION_COOKIE_HTTPONLY = True
     SESSION_COOKIE_SAMESITE = "Lax"
