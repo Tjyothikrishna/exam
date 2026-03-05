@@ -16,6 +16,7 @@ class Config:
         "DATABASE_URL",
         "postgresql+psycopg2://exam_user:exam_pass@localhost:5432/exam_db",
     )
+    SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL", "sqlite:///exam.db")
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     SESSION_COOKIE_HTTPONLY = True
