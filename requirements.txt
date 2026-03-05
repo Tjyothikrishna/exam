@@ -1,4 +1,6 @@
 Flask
+Flask-Login
+Flask-Bcrypt
 Flask-SQLAlchemy
 Flask-Migrate
 mysql-connector-python

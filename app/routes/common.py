@@ -1,13 +1,16 @@
 from functools import wraps
 
-from flask import abort, redirect, session, url_for
+from flask import abort
+from flask_login import current_user
 
 
-def login_required(func):
+def student_required(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
-        if "user_id" not in session:
-            return redirect(url_for("login"))
+        if not current_user.is_authenticated:
+            abort(401)
+        if current_user.role != "student":
+            abort(403)
         return func(*args, **kwargs)
 
     return wrapper
@@ -16,9 +19,9 @@ def login_required(func):
 def admin_required(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
-        if "user_id" not in session:
-            return redirect(url_for("login"))
-        if session.get("role") != "admin":
+        if not current_user.is_authenticated:
+            abort(401)
+        if current_user.role != "admin":
             abort(403)
         return func(*args, **kwargs)
 

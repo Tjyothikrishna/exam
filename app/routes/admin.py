@@ -60,7 +60,7 @@ def admin_question_sets():
 @bp.route("/attempt/<int:attempt_id>", endpoint="admin_attempt_detail")
 @admin_required
 def admin_attempt_detail(attempt_id: int):
-    return redirect(url_for("admin_dashboard"))
+    return redirect(url_for("admin.admin_dashboard"))
 
 
 @bp.route("/download_attempts_csv", endpoint="download_attempts_csv")
