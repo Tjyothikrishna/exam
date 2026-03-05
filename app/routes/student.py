@@ -55,7 +55,7 @@ def test():
     session["current_index"] = 0
     session["score"] = 0
     session["answers"] = []
-    return redirect(url_for("question"))
+    return redirect(url_for("student.question"))
 
 
 @bp.route("/question", methods=["GET", "POST"], endpoint="question")
