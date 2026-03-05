@@ -91,6 +91,7 @@ def verify_otp():
 
     return render_template("verify_otp.html")
 
+    return render_template("verify_otp.html")
 
 @bp.route("/login", methods=["GET", "POST"], endpoint="login")
 def login():
@@ -106,7 +107,7 @@ def login():
         login_user(user)
         if user.role == "admin":
             return redirect(url_for("admin.admin_dashboard"))
-        return redirect(url_for("student.home"))
+        return redirect(url_for("home"))
 
     return render_template("login.html")
 
