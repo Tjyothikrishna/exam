@@ -3,7 +3,7 @@ from collections import OrderedDict
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 from flask_login import login_required
 
-from app.models import Exam, Question, Result, User, db
+from app.models import Option, Question, QuestionSet, TestAttempt, User, db
 from app.routes.common import admin_required
 
 bp = Blueprint("admin", __name__, url_prefix="/admin")
@@ -13,27 +13,18 @@ bp = Blueprint("admin", __name__, url_prefix="/admin")
 @login_required
 @admin_required
 def admin_dashboard():
+    attempts = TestAttempt.query.all()
     stats = {
         "total_students": User.query.filter_by(role="student").count(),
-        "total_exams": Exam.query.count(),
+        "total_exams": QuestionSet.query.count(),
         "total_questions": Question.query.count(),
-        "total_results": Result.query.count(),
+        "total_results": len(attempts),
     }
-    recent_exams = Exam.query.order_by(Exam.created_at.desc()).limit(5).all()
+    recent_exams = QuestionSet.query.order_by(QuestionSet.created_at.desc()).limit(5).all()
 
-    results = Result.query.all()
-    exams = Exam.query.all()
-    exam_title_map = {exam.id: exam.title for exam in exams}
-
-    distribution_ranges = OrderedDict([
-        ("0-20", 0),
-        ("21-40", 0),
-        ("41-60", 0),
-        ("61-80", 0),
-        ("81-100", 0),
-    ])
-    for result in results:
-        score = float(result.score or 0)
+    distribution_ranges = OrderedDict([("0-20", 0), ("21-40", 0), ("41-60", 0), ("61-80", 0), ("81-100", 0)])
+    for attempt in attempts:
+        score = float(attempt.percentage or 0)
         if score <= 20:
             distribution_ranges["0-20"] += 1
         elif score <= 40:
@@ -46,18 +37,18 @@ def admin_dashboard():
             distribution_ranges["81-100"] += 1
 
     exam_score_buckets = {}
-    for result in results:
-        exam_score_buckets.setdefault(result.exam_id, []).append(float(result.score or 0))
+    for attempt in attempts:
+        exam_score_buckets.setdefault(attempt.question_set_id, []).append(float(attempt.percentage or 0))
 
-    avg_exam_labels = []
-    avg_exam_values = []
+    avg_exam_labels, avg_exam_values = [], []
     for exam_id, scores in exam_score_buckets.items():
-        avg_exam_labels.append(exam_title_map.get(exam_id, f"Exam {exam_id}"))
+        exam = QuestionSet.query.get(exam_id)
+        avg_exam_labels.append(exam.title if exam else f"Exam {exam_id}")
         avg_exam_values.append(round(sum(scores) / len(scores), 2) if scores else 0)
 
     taken_per_day = OrderedDict()
-    for result in results:
-        day_key = result.submitted_at.strftime("%Y-%m-%d") if result.submitted_at else "Unknown"
+    for attempt in attempts:
+        day_key = attempt.attempted_at.strftime("%Y-%m-%d")
         taken_per_day[day_key] = taken_per_day.get(day_key, 0) + 1
 
     chart_data = {
@@ -69,13 +60,7 @@ def admin_dashboard():
         "daily_values": list(taken_per_day.values()),
     }
 
-    return render_template(
-        "admin/dashboard.html",
-        stats=stats,
-        recent_exams=recent_exams,
-        chart_data=chart_data,
-    )
-    return render_template("admin/dashboard.html", stats=stats, recent_exams=recent_exams)
+    return render_template("admin/dashboard.html", stats=stats, recent_exams=recent_exams, chart_data=chart_data)
 
 
 @bp.route("/exams", methods=["GET", "POST"], endpoint="admin_exams")
@@ -86,22 +71,16 @@ def admin_exams():
         title = request.form.get("title", "").strip()
         description = request.form.get("description", "").strip()
         duration = request.form.get("duration", "60").strip()
-
         if not title:
-            flash("Exam title is required.", "danger")
+            flash("Exam title is required.")
             return redirect(url_for("admin.admin_exams"))
 
-        exam = Exam(
-            title=title,
-            description=description,
-            duration=int(duration) if duration.isdigit() else 60,
-        )
-        db.session.add(exam)
+        db.session.add(QuestionSet(title=title, description=description, duration=int(duration) if duration.isdigit() else 60, created_by=None))
         db.session.commit()
-        flash("Exam created successfully.", "success")
+        flash("Exam created successfully.")
         return redirect(url_for("admin.admin_exams"))
 
-    exams = Exam.query.order_by(Exam.created_at.desc()).all()
+    exams = QuestionSet.query.order_by(QuestionSet.created_at.desc()).all()
     return render_template("admin/exams.html", exams=exams)
 
 
@@ -109,10 +88,10 @@ def admin_exams():
 @login_required
 @admin_required
 def delete_exam(exam_id: int):
-    exam = Exam.query.get_or_404(exam_id)
+    exam = QuestionSet.query.get_or_404(exam_id)
     db.session.delete(exam)
     db.session.commit()
-    flash("Exam deleted successfully.", "success")
+    flash("Exam deleted successfully.")
     return redirect(url_for("admin.admin_exams"))
 
 
@@ -120,62 +99,35 @@ def delete_exam(exam_id: int):
 @login_required
 @admin_required
 def admin_questions(exam_id: int):
-    exam = Exam.query.get_or_404(exam_id)
+    exam = QuestionSet.query.get_or_404(exam_id)
 
     if request.method == "POST":
         question_text = request.form.get("question_text", "").strip()
-        option_a = request.form.get("option_a", "").strip()
-        option_b = request.form.get("option_b", "").strip()
-        option_c = request.form.get("option_c", "").strip()
-        option_d = request.form.get("option_d", "").strip()
+        options = {
+            "A": request.form.get("option_a", "").strip(),
+            "B": request.form.get("option_b", "").strip(),
+            "C": request.form.get("option_c", "").strip(),
+            "D": request.form.get("option_d", "").strip(),
+        }
         correct_answer = request.form.get("correct_answer", "").strip().upper()
 
-        if not all([question_text, option_a, option_b, option_c, option_d, correct_answer]):
-            flash("All question fields are required.", "danger")
+        if not question_text or not all(options.values()) or correct_answer not in options:
+            flash("All fields are required and correct answer must be A/B/C/D.")
             return redirect(url_for("admin.admin_questions", exam_id=exam.id))
 
-        if correct_answer not in {"A", "B", "C", "D"}:
-            flash("Correct answer must be one of A, B, C, D.", "danger")
-            return redirect(url_for("admin.admin_questions", exam_id=exam.id))
-
-        question = Question(
-            exam_id=exam.id,
-            question_text=question_text,
-            option_a=option_a,
-            option_b=option_b,
-            option_c=option_c,
-            option_d=option_d,
-            correct_answer=correct_answer,
-        )
+        question = Question(question_set_id=exam.id, question_text=question_text)
         db.session.add(question)
+        db.session.flush()
+
+        for key, text in options.items():
+            db.session.add(Option(question_id=question.id, option_text=text, is_correct=(key == correct_answer)))
+
         db.session.commit()
-        flash("Question added successfully.", "success")
+        flash("Question added successfully.")
         return redirect(url_for("admin.admin_questions", exam_id=exam.id))
 
-    questions = Question.query.filter_by(exam_id=exam.id).order_by(Question.id.desc()).all()
+    questions = Question.query.filter_by(question_set_id=exam.id).order_by(Question.id.desc()).all()
     return render_template("admin/questions.html", exam=exam, questions=questions)
-
-
-@bp.post("/questions/<int:question_id>/edit", endpoint="edit_question")
-@login_required
-@admin_required
-def edit_question(question_id: int):
-    question = Question.query.get_or_404(question_id)
-
-    question.question_text = request.form.get("question_text", "").strip()
-    question.option_a = request.form.get("option_a", "").strip()
-    question.option_b = request.form.get("option_b", "").strip()
-    question.option_c = request.form.get("option_c", "").strip()
-    question.option_d = request.form.get("option_d", "").strip()
-    question.correct_answer = request.form.get("correct_answer", "").strip().upper()
-
-    if question.correct_answer not in {"A", "B", "C", "D"}:
-        flash("Correct answer must be one of A, B, C, D.", "danger")
-        return redirect(url_for("admin.admin_questions", exam_id=question.exam_id))
-
-    db.session.commit()
-    flash("Question updated.", "success")
-    return redirect(url_for("admin.admin_questions", exam_id=question.exam_id))
 
 
 @bp.post("/questions/<int:question_id>/delete", endpoint="delete_question")
@@ -183,8 +135,17 @@ def edit_question(question_id: int):
 @admin_required
 def delete_question(question_id: int):
     question = Question.query.get_or_404(question_id)
-    exam_id = question.exam_id
+    exam_id = question.question_set_id
     db.session.delete(question)
     db.session.commit()
-    flash("Question deleted.", "success")
+    flash("Question deleted.")
     return redirect(url_for("admin.admin_questions", exam_id=exam_id))
+
+
+@bp.post("/questions/<int:question_id>/edit", endpoint="edit_question")
+@login_required
+@admin_required
+def edit_question(question_id: int):
+    flash("Edit is not available in legacy-compatible mode. Delete and recreate question.")
+    question = Question.query.get_or_404(question_id)
+    return redirect(url_for("admin.admin_questions", exam_id=question.question_set_id))

@@ -1,75 +1,59 @@
 import random
 
-from app.models import get_db_connection
+from app.models import QuestionSet, StudentAnswer, TestAttempt, db
 
 
 def load_random_question_set():
-    conn = get_db_connection()
-    cursor = conn.cursor(dictionary=True)
-
-    cursor.execute("SELECT id, title FROM question_sets ORDER BY RAND() LIMIT 1")
-    question_set = cursor.fetchone()
-    if not question_set:
-        cursor.close()
-        conn.close()
+    question_sets = QuestionSet.query.all()
+    if not question_sets:
         return [], None
 
-    cursor.execute(
-        "SELECT id, question_text FROM questions WHERE question_set_id = %s",
-        (question_set["id"],),
-    )
-    questions = cursor.fetchall()
-
-    for q in questions:
-        cursor.execute(
-            "SELECT id, option_text, is_correct FROM options WHERE question_id = %s",
-            (q["id"],),
+    question_set = random.choice(question_sets)
+    questions_payload = []
+    for question in question_set.questions:
+        options = []
+        correct_option_id = None
+        for option in question.options:
+            options.append({"id": option.id, "option_text": option.option_text})
+            if option.is_correct:
+                correct_option_id = option.id
+        questions_payload.append(
+            {
+                "id": question.id,
+                "question_text": question.question_text,
+                "options": options,
+                "correct_option_id": correct_option_id,
+            }
         )
-        options = cursor.fetchall()
-        q["options"] = options
-        q["correct_option_id"] = next(
-            (opt["id"] for opt in options if opt["is_correct"]),
-            None,
-        )
 
-    cursor.close()
-    conn.close()
-    random.shuffle(questions)
-    return questions, question_set["id"]
+    random.shuffle(questions_payload)
+    return questions_payload, question_set.id
 
 
 def save_attempt(user_id: int, question_set_id: int, questions: list, answers: list, score: int):
     total_questions = len(questions)
     percentage = round((score / total_questions) * 100, 2) if total_questions else 0
-    passed = percentage >= 70
 
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    cursor.execute(
-        """
-        INSERT INTO test_attempts
-        (user_id, question_set_id, score, total_questions, percentage, passed)
-        VALUES (%s, %s, %s, %s, %s, %s)
-        """,
-        (user_id, question_set_id, score, total_questions, percentage, passed),
+    attempt = TestAttempt(
+        user_id=user_id,
+        question_set_id=question_set_id,
+        score=score,
+        total_questions=total_questions,
+        percentage=percentage,
+        passed=percentage >= 70,
     )
-    attempt_id = cursor.lastrowid
+    db.session.add(attempt)
+    db.session.flush()
 
     for ans in answers:
-        cursor.execute(
-            """
-            INSERT INTO student_answers
-            (test_attempt_id, question_id, selected_option_id, is_correct)
-            VALUES (%s, %s, %s, %s)
-            """,
-            (
-                attempt_id,
-                ans["question_id"],
-                ans["selected_option_id"],
-                ans["is_correct"],
-            ),
+        db.session.add(
+            StudentAnswer(
+                test_attempt_id=attempt.id,
+                question_id=ans["question_id"],
+                selected_option_id=ans["selected_option_id"],
+                is_correct=ans["is_correct"],
+            )
         )
 
-    conn.commit()
-    cursor.close()
-    conn.close()
+    db.session.commit()
+    return attempt

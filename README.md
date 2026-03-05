@@ -21,6 +21,12 @@ DATABASE_URL=postgresql+psycopg2://exam_user:exam_pass@db:5432/exam_db
 Required variables:
 - `SECRET_KEY`
 - `DATABASE_URL`
+- `EMAIL_USER`
+- `EMAIL_PASS`
+
+Optional SMTP variables:
+- `SMTP_HOST` (default: `smtp.gmail.com`)
+- `SMTP_PORT` (default: `587`)
 
 ## 3) Local Development (without Docker)
 
