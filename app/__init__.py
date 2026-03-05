@@ -1,19 +1,20 @@
 from flask import Flask
 
-<<<<<<< codex/create-clean-pr-branch-for-pull-request-sca4k5
 from .config import Config
-=======
->>>>>>> main
-from .routes import register_routes
+from .models import db, migrate
+from .routes import register_blueprints
 
 
-def create_app():
-    app = Flask(__name__)
-<<<<<<< codex/create-clean-pr-branch-for-pull-request-sca4k5
+def create_app() -> Flask:
+    app = Flask(__name__, template_folder="../templates", static_folder="../static")
     app.config.from_object(Config)
-=======
-    app.secret_key = "your_secret_key"
->>>>>>> main
 
-    register_routes(app)
+    db.init_app(app)
+    migrate.init_app(app, db)
+
+    register_blueprints(app)
+
+    with app.app_context():
+        db.create_all()
+
     return app
