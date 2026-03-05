@@ -12,6 +12,10 @@ class Config:
     DB_PASSWORD = os.getenv("DB_PASSWORD", "root123")
     DB_NAME = os.getenv("DB_NAME", "website")
 
+    SQLALCHEMY_DATABASE_URI = os.getenv(
+        "DATABASE_URL",
+        "postgresql+psycopg2://exam_user:exam_pass@localhost:5432/exam_db",
+    )
     SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL", "sqlite:///exam.db")
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
