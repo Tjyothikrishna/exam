@@ -1,19 +1,11 @@
 from flask import Flask
 
-<<<<<<< codex/create-clean-pr-branch-for-pull-request-sca4k5
 from .config import Config
-=======
->>>>>>> main
-from .routes import register_routes
+from .routes import register_blueprints
 
 
-def create_app():
-    app = Flask(__name__)
-<<<<<<< codex/create-clean-pr-branch-for-pull-request-sca4k5
+def create_app() -> Flask:
+    app = Flask(__name__, template_folder="../templates", static_folder="../static")
     app.config.from_object(Config)
-=======
-    app.secret_key = "your_secret_key"
->>>>>>> main
-
-    register_routes(app)
+    register_blueprints(app)
     return app
