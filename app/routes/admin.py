@@ -75,6 +75,7 @@ def admin_dashboard():
         recent_exams=recent_exams,
         chart_data=chart_data,
     )
+    return render_template("admin/dashboard.html", stats=stats, recent_exams=recent_exams)
 
 
 @bp.route("/exams", methods=["GET", "POST"], endpoint="admin_exams")
