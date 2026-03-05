@@ -20,7 +20,9 @@ DATABASE_URL=postgresql+psycopg2://exam_user:exam_pass@db:5432/exam_db
 
 Required variables:
 - `SECRET_KEY`
-- `DATABASE_URL`
+
+Optional variables:
+- `DATABASE_URL` (defaults to `sqlite:///exam.db` for local development)
 - `EMAIL_USER`
 - `EMAIL_PASS`
 
@@ -34,12 +36,12 @@ Optional SMTP variables:
 python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
-export SECRET_KEY="change-me"
-export DATABASE_URL="postgresql+psycopg2://exam_user:exam_pass@localhost:5432/exam_db"
 python app.py
 ```
 
-App starts on `http://127.0.0.1:5000`.
+By default, local development uses SQLite (`sqlite:///exam.db`) when `DATABASE_URL` is not set.
+
+App starts on `http://localhost:5000`.
 
 ## 4) Docker Deployment
 

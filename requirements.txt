@@ -8,3 +8,4 @@ pytest
 mysql-connector-python
 fpdf
 Pillow
+python-dotenv

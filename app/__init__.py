@@ -1,6 +1,6 @@
 from flask import Flask
 
-from .config import Config
+from .config import get_config_class
 from .extensions import bcrypt, login_manager
 from .models import User, db, migrate
 from .routes import register_blueprints
@@ -8,7 +8,7 @@ from .routes import register_blueprints
 
 def create_app() -> Flask:
     app = Flask(__name__, template_folder="../templates", static_folder="../static")
-    app.config.from_object(Config)
+    app.config.from_object(get_config_class())
 
     db.init_app(app)
     migrate.init_app(app, db)
