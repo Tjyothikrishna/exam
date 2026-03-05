@@ -21,12 +21,6 @@ def create_app() -> Flask:
 
     register_blueprints(app)
 
-    @app.get("/")
-    def index():
-        from flask import redirect, url_for
-        return redirect(url_for("auth.login"))
-
-
     with app.app_context():
         db.create_all()
 
