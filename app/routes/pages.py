@@ -9,8 +9,8 @@ bp = Blueprint("pages", __name__)
 @bp.route("/")
 def index():
     if current_user.is_authenticated:
-        return redirect(url_for("home"))
-    return redirect(url_for("login"))
+        return redirect(url_for("student.home"))
+    return redirect(url_for("auth.login"))
 
 
 @bp.route("/about", endpoint="about")
@@ -36,6 +36,6 @@ def settings():
         current_user.gender = request.form.get("gender", current_user.gender)
         db.session.commit()
         flash("Profile updated successfully.")
-        return redirect(url_for("settings"))
+        return redirect(url_for("pages.settings"))
 
     return render_template("settings.html", user=current_user)

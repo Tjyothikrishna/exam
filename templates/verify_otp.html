@@ -35,16 +35,16 @@
         <input class="mobile__input" type="checkbox" id="checkbox" />
         <nav class="mobile__nav">
           <ul>
-            <li class="nav__item"><a href="{{ url_for('home') }}">Home</a></li>
-            <li class="nav__item"><a href="{{ url_for('about') }}">About</a></li>
-            <li class="nav__item"><a href="{{ url_for('help') }}">Help</a></li>
+            <li class="nav__item"><a href="{{ url_for('student.home') }}">Home</a></li>
+            <li class="nav__item"><a href="{{ url_for('pages.about') }}">About</a></li>
+            <li class="nav__item"><a href="{{ url_for('pages.help') }}">Help</a></li>
           </ul>
         </nav>
     </div>
 
     <div class="container">
         <h2>OTP Verification</h2>
-        <form id="otpForm" action="{{ url_for('verify_otp') }}" method="POST">
+        <form id="otpForm" action="{{ url_for('auth.verify_otp') }}" method="POST">
             <label for="otp">Enter OTP</label>
             <input type="text" id="otp" name="otp" placeholder="Enter OTP" required>
             <div class="temp">

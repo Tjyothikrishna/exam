@@ -18,7 +18,7 @@ bp = Blueprint("auth", __name__)
 @bp.route("/signup", methods=["GET", "POST"], endpoint="signup")
 def signup():
     if current_user.is_authenticated:
-        return redirect(url_for("home"))
+        return redirect(url_for("student.home"))
 
     if request.method == "POST":
         email = request.form.get("email", "").strip().lower()
@@ -53,7 +53,7 @@ def signup():
             return render_template("signup.html")
 
         flash("OTP sent to your email.")
-        return redirect(url_for("verify_otp"))
+        return redirect(url_for("auth.verify_otp"))
 
     return render_template("signup.html")
 
@@ -67,11 +67,11 @@ def verify_otp():
 
         if not stored_otp:
             flash("Signup session expired. Please sign up again.")
-            return redirect(url_for("signup"))
+            return redirect(url_for("auth.signup"))
 
         if is_otp_expired(expiry):
             flash("OTP expired. Please sign up again.")
-            return redirect(url_for("signup"))
+            return redirect(url_for("auth.signup"))
 
         if entered_otp != stored_otp:
             flash("Invalid OTP.")
@@ -80,22 +80,23 @@ def verify_otp():
         signup_data = session.get("signup_data")
         if not signup_data:
             flash("Signup session expired. Please try again.")
-            return redirect(url_for("signup"))
+            return redirect(url_for("auth.signup"))
 
         create_student(signup_data)
         for key in ["signup_otp", "signup_otp_expiry", "signup_data"]:
             session.pop(key, None)
 
         flash("Account created successfully. Please login.")
-        return redirect(url_for("login"))
+        return redirect(url_for("auth.login"))
 
     return render_template("verify_otp.html")
 
+    return render_template("verify_otp.html")
 
 @bp.route("/login", methods=["GET", "POST"], endpoint="login")
 def login():
     if current_user.is_authenticated:
-        return redirect(url_for("home"))
+        return redirect(url_for("student.home"))
 
     if request.method == "POST":
         user = validate_login(request.form.get("email", ""), request.form.get("password", ""))
@@ -130,7 +131,7 @@ def forgot_password():
             return render_template("forgot_password.html")
 
         flash("OTP sent to your email.")
-        return redirect(url_for("reset_password"))
+        return redirect(url_for("auth.reset_password"))
 
     return render_template("forgot_password.html")
 
@@ -148,7 +149,7 @@ def reset_password():
 
         if is_otp_expired(session.get("reset_otp_expiry", "")):
             flash("OTP expired. Please retry forgot password flow.")
-            return redirect(url_for("forgot_password"))
+            return redirect(url_for("auth.forgot_password"))
 
         if entered_otp != session.get("reset_otp"):
             flash("Invalid OTP.")
@@ -157,14 +158,14 @@ def reset_password():
         email = session.get("reset_email")
         if not email:
             flash("Session expired.")
-            return redirect(url_for("forgot_password"))
+            return redirect(url_for("auth.forgot_password"))
 
         update_password(email, new_password)
         for key in ["reset_email", "reset_otp", "reset_otp_expiry"]:
             session.pop(key, None)
 
         flash("Password reset successful. Please login.")
-        return redirect(url_for("login"))
+        return redirect(url_for("auth.login"))
 
     return render_template("reset_password.html")
 
@@ -174,4 +175,4 @@ def reset_password():
 def logout():
     logout_user()
     flash("Logged out successfully.")
-    return redirect(url_for("login"))
+    return redirect(url_for("auth.login"))

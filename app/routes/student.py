@@ -48,7 +48,7 @@ def test():
     questions, question_set_id = load_random_question_set()
     if not questions:
         flash("No question sets available.")
-        return redirect(url_for("home"))
+        return redirect(url_for("student.home"))
 
     session["questions"] = questions
     session["question_set_id"] = question_set_id
@@ -66,7 +66,7 @@ def question():
     index = session.get("current_index", 0)
 
     if not questions:
-        return redirect(url_for("home"))
+        return redirect(url_for("student.home"))
 
     if request.method == "POST":
         selected_option_id = int(request.form.get("option", "0"))
@@ -88,11 +88,11 @@ def question():
         session["current_index"] = index + 1
 
         if session["current_index"] >= len(questions):
-            return redirect(url_for("submit_test"))
-        return redirect(url_for("question"))
+            return redirect(url_for("student.submit_test"))
+        return redirect(url_for("student.question"))
 
     if index >= len(questions):
-        return redirect(url_for("submit_test"))
+        return redirect(url_for("student.submit_test"))
 
     current_question = questions[index]
     return render_template(
@@ -116,7 +116,7 @@ def question():
 def submit_test():
     questions = session.get("questions", [])
     if not questions:
-        return redirect(url_for("home"))
+        return redirect(url_for("student.home"))
 
     attempt = save_attempt(
         current_user.id,

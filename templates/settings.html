@@ -19,7 +19,7 @@
 {% block content %}
     <div class="container" style="max-width: 600px;">
         <h1 style="color: brown;text-align: center;">Settings</h1>
-        <form id="settingsForm" action="{{ url_for('settings') }}" method="POST" enctype="multipart/form-data">
+        <form id="settingsForm" action="{{ url_for('pages.settings') }}" method="POST" enctype="multipart/form-data">
             <label for="first_name">First Name:</label>
             <input type="text" id="first_name" name="first_name" value="{{ user.first_name }}" required>
 

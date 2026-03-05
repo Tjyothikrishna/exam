@@ -39,9 +39,9 @@
             <input class="mobile__input" type="checkbox" id="checkbox" />
             <nav class="mobile__nav">
               <ul>
-                <li class="nav__item"><a href="{{ url_for('home') }}">Home</a></li>
-                <li class="nav__item"><a href="{{ url_for('about') }}">About</a></li>
-                <li class="nav__item"><a href="{{ url_for('help') }}">Help</a></li>
+                <li class="nav__item"><a href="{{ url_for('student.home') }}">Home</a></li>
+                <li class="nav__item"><a href="{{ url_for('pages.about') }}">About</a></li>
+                <li class="nav__item"><a href="{{ url_for('pages.help') }}">Help</a></li>
               </ul>
             </nav>
         </div>
@@ -54,7 +54,7 @@
             <h2 style="text-align:center; color:white;"> Login</h2>
 
             <form class="login" id="loginForm" 
-                  action="{{ url_for('login') }}" method="POST">
+                  action="{{ url_for('auth.login') }}" method="POST">
 
                 <div class="login__field">
                     <i class="login__icon fas fa-user"></i>
@@ -82,10 +82,10 @@
 
             <div class="auth-actions">
                 <div class="auth-links">
-                    <a href="{{ url_for('signup') }}" class="alt-btn">
+                    <a href="{{ url_for('auth.signup') }}" class="alt-btn">
                         Create Account
                     </a>
-                    <a href="{{ url_for('forgot_password') }}" class="alt-link">
+                    <a href="{{ url_for('auth.forgot_password') }}" class="alt-link">
                         Forgot Password?
                     </a>
                 </div>
