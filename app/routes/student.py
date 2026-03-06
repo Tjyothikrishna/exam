@@ -32,7 +32,7 @@ def home():
     avg_percentage = round(sum(a.percentage or 0 for a in attempts) / total_attempts, 2) if total_attempts else 0
 
     return render_template(
-        "home.html",
+        "student_home.html",
         user=current_user,
         total_attempts=total_attempts,
         last_attempt=last_attempt,
