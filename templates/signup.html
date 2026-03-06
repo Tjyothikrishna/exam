@@ -1,130 +1,41 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="{{ url_for('static', filename='images/logo.png') }}" type="image/png">
-    <title>Registration</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/signup.css') }}">
-    <script defer src="{{ url_for('static', filename='js/scripts.js') }}"></script>
-</head>
-<body>
-    {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        <script>
-            alert("{{ messages[0] }}");
-        </script>
-      {% endif %}
-    {% endwith %}
-
-    <div class="mobile">
-        <label class="mobile__label" for="checkbox">
-          <div class="mobile__label__content">
-            <span class="label__line"></span>
-            <span class="label__line"></span>
-          </div>
-          <div class="mobile__label__content">
-            <span class="label__line"></span>
-            <span class="label__line"></span>
-          </div>
-          <div class="mobile__label__content">
-            <span class="label__line"></span>
-            <span class="label__line"></span>
-          </div>
-        </label>
-        <input class="mobile__input" type="checkbox" id="checkbox" />
-        <nav class="mobile__nav">
-          <ul>
-            <li class="nav__item"><a href="{{ url_for('student.home') }}">Home</a></li>
-            <li class="nav__item"><a href="{{ url_for('pages.about') }}">About</a></li>
-            <li class="nav__item"><a href="{{ url_for('pages.help') }}">Help</a></li>
-          </ul>
-        </nav>
+{% extends "base.html" %}
+{% block title %}Sign Up | Exam Portal{% endblock %}
+{% block content %}
+<div class="auth-shell">
+  <section class="auth-card" style="width:min(700px,100%);">
+    <h1 class="auth-title">Create your account</h1>
+    <p class="auth-subtitle">Register to start taking exams.</p>
+    <form id="signupForm" class="form-grid" action="{{ url_for('auth.signup') }}" method="POST" enctype="multipart/form-data">
+      <div class="form-row-2">
+        <div class="field"><label for="first_name">First Name</label><input id="first_name" name="first_name" type="text" required></div>
+        <div class="field"><label for="last_name">Last Name</label><input id="last_name" name="last_name" type="text" required></div>
+      </div>
+      <div class="form-row-2">
+        <div class="field"><label for="email">Email</label><input id="email" name="email" type="email" required></div>
+        <div class="field"><label for="mobile_number">Mobile Number</label><input id="mobile_number" name="mobile_number" type="text" required></div>
+      </div>
+      <div class="form-row-2">
+        <div class="field"><label for="password">Password</label><input id="password" name="password" type="password" required></div>
+        <div class="field"><label for="confirm_password">Confirm Password</label><input id="confirm_password" name="confirm_password" type="password" required></div>
+      </div>
+      <div class="form-row-2">
+        <div class="field"><label for="college_name">College Name</label><input id="college_name" name="college_name" type="text" required></div>
+        <div class="field"><label for="qualification">Qualification</label><input id="qualification" name="qualification" type="text" required></div>
+      </div>
+      <div class="field">
+        <label>Gender</label>
+        <div style="display:flex; gap:1rem; padding-top:.35rem;">
+          <label><input type="radio" name="gender" value="Male" required> Male</label>
+          <label><input type="radio" name="gender" value="Female" required> Female</label>
+          <label><input type="radio" name="gender" value="Other" required> Other</label>
+        </div>
+      </div>
+      <button class="btn btn-primary btn-block" type="submit">Create Account</button>
+    </form>
+    <div class="inline-links">
+      <span class="muted">Already have an account?</span>
+      <a href="{{ url_for('auth.login') }}">Login</a>
     </div>
-
-    <div class="wrapper">
-        
-    <div class="container rounded shadow">
-      <h3>Registration Form</h3>
-
-      <form id="signupForm" action="{{ url_for('auth.signup') }}" method="POST" enctype="multipart/form-data" onsubmit="validateForm(event, 'signup')">
-
-        <div class="form-row-total">
-          <div class="form-row">
-            <label for="first_name">First Name</label>
-            <input type="text" id="first_name" name="first_name" placeholder="First Name" required class="form-control">
-          </div>
-          <div class="form-row">
-            <label for="last_name">Last Name</label>
-            <input type="text" id="last_name" name="last_name" placeholder="Last Name" required class="form-control">
-          </div>
-        </div>
-
-        <div class="form-row-total">
-          <div class="form-row">
-            <label for="email">Email</label>
-            <input type="email" id="email" name="email" placeholder="Enter your Email" required class="form-control">
-          </div>
-          <div class="form-row">
-            <label for="mobile_number">Mobile Number</label>
-            <input type="text" id="mobile_number" name="mobile_number" placeholder="Enter your Mobile Number" required pattern="[0-9]{10}" class="form-control">
-          </div>
-        </div>
-
-        <div class="form-row-total">
-          <div class="form-row">
-            <label for="password">Password</label>
-            <input type="password" id="password" name="password" placeholder="Enter your Password" required class="form-control">
-          </div>
-          <div class="form-row">
-            <label for="confirm_password">Confirm Password</label>
-            <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirm your Password" required class="form-control">
-          </div>
-        </div>
-
-        <div class="form-row-total">
-          <div class="form-row">
-            <label for="gender">Gender :</label>
-            <div class="radio-group">
-              <input type="radio" id="male" name="gender" value="Male" required>
-              <label for="male">Male</label>
-              <input type="radio" id="female" name="gender" value="Female">
-              <label for="female">Female</label>
-              <input type="radio" id="other" name="gender" value="Other">
-              <label for="other">Other</label>
-            </div>
-          </div>
-        </div>
-
-        <div class="form-row-total">
-          <div class="form-row">
-            <div class="radio-group">
-              <label for="profile_pic">Profile Picture :</label>
-              <input type="file" id="profile_pic" name="profile_pic" accept="image/*">
-            </div>
-          </div>
-        </div>
-
-        <div class="form-row-total">
-          <div class="form-row checkbox">
-            <label>
-              <input type="checkbox" required> I accept the Terms of Use & Privacy Policy.
-            </label>
-          </div>
-        </div>
-
-        <div class="form-row-total">
-          <div class="form-row">
-            <button type="submit" class="rounded shadow">Register Now</button>
-          </div>
-        </div>
-
-      </form>
-
-      <p>Already a user? <a href="{{ url_for('auth.login') }}">Login</a></p>
-    </div>
-  </div>
-
-	<script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
-</body>
-</html>
+  </section>
+</div>
+{% endblock %}
