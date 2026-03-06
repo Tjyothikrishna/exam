@@ -107,7 +107,7 @@ def login():
         login_user(user)
         if user.role == "admin":
             return redirect(url_for("admin.admin_dashboard"))
-        return redirect(url_for("home"))
+        return redirect(url_for("student.home"))
 
     return render_template("login.html")
 

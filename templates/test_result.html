@@ -1,49 +1,21 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Test Result</title>
-    <style>
-        body {
-            font-family: Arial;
-            background: linear-gradient(to right, #43cea2, #185a9d);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            color: white;
-        }
-        .card {
-            background: white;
-            color: black;
-            padding: 40px;
-            border-radius: 12px;
-            width: 420px;
-            text-align: center;
-        }
-        .score {
-            font-size: 48px;
-            font-weight: bold;
-        }
-        .btn {
-            display: inline-block;
-            margin-top: 20px;
-            padding: 12px 24px;
-            background: #4f46e5;
-            color: white;
-            text-decoration: none;
-            border-radius: 8px;
-        }
-    </style>
-</head>
-<body>
+{% extends "base.html" %}
+{% block title %}Test Result | Exam Portal{% endblock %}
+{% block content %}
+<div class="auth-shell">
+  <section class="auth-card" style="width:min(640px,100%);">
+    <h1 class="auth-title">Test Result</h1>
+    <p class="auth-subtitle">Here is your latest exam performance summary.</p>
 
-<div class="card">
-    <h2>Test Completed 🎉</h2>
-    <div class="score">{{ score }}/{{ total }}</div>
-    <p>Percentage: <b>{{ percentage }}%</b></p>
+    <div class="metric-grid" style="grid-template-columns:repeat(3,minmax(0,1fr)); margin-bottom:0;">
+      <article class="metric-card"><div class="label">Score</div><div class="value">{{ score }}</div></article>
+      <article class="metric-card"><div class="label">Total Questions</div><div class="value">{{ total }}</div></article>
+      <article class="metric-card"><div class="label">Percentage</div><div class="value">{{ percentage }}%</div></article>
+    </div>
 
-    <a href="{{ url_for('student.home') }}" class="btn">Go to Home</a>
+    <div class="inline-links" style="margin-top:1rem;">
+      <a class="btn btn-secondary" href="{{ url_for('student.home') }}">Back to Dashboard</a>
+      <a class="btn btn-primary" href="{{ url_for('student.test') }}">Start New Test</a>
+    </div>
+  </section>
 </div>
-
-</body>
-</html>
+{% endblock %}

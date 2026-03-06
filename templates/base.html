@@ -1,69 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-    <script defer src="{{ url_for('static', filename='js/scripts.js') }}"></script>
-    <link rel="icon" href="{{ url_for('static', filename='images/logo.png') }}" type="image/png">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}Exam System{% endblock %}</title>
+  <link rel="icon" href="{{ url_for('static', filename='images/logo.png') }}" type="image/png" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}" />
+  {% block extra_head %}{% endblock %}
 </head>
 <body>
-    {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        <script>
-            alert("{{ messages[0] }}");
-        </script>
-      {% endif %}
-    {% endwith %}
-   <!-- 3D ROTATING NAVIGATION -->
-    <nav class="rotate-nav">
-    <ul>
-        <li id="nav-1" class="nav-item active">
-        <a href="{{ url_for('student.home') }}" aria-label="Home">
-            <div class="home-icon">
-            <div class="roof">
-                <div class="roof-edge"></div>
+  <div class="site-wrap">
+    <header class="topbar">
+      <div class="topbar-inner">
+        <a href="{{ url_for('pages.index') }}" class="brand">
+          <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" />
+          <span>Exam Portal</span>
+        </a>
+        <nav class="nav-links">
+          <a class="nav-link" href="{{ url_for('pages.about') }}">About</a>
+          <a class="nav-link" href="{{ url_for('pages.help') }}">Help</a>
+          {% if current_user.is_authenticated %}
+            {% if current_user.role == 'admin' %}
+              <a class="nav-link" href="{{ url_for('admin.admin_dashboard') }}">Admin</a>
+            {% else %}
+              <a class="nav-link" href="{{ url_for('student.home') }}">Dashboard</a>
+            {% endif %}
+            <a class="nav-link" href="{{ url_for('pages.settings') }}">Settings</a>
+            <a class="nav-link" href="{{ url_for('auth.logout') }}">Logout</a>
+          {% else %}
+            <a class="nav-link" href="{{ url_for('auth.login') }}">Login</a>
+            <a class="nav-link" href="{{ url_for('auth.signup') }}">Sign Up</a>
+          {% endif %}
+        </nav>
+      </div>
+    </header>
+
+    <main class="main-content">
+      <div class="container">
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            <div class="flash-wrap">
+              {% for message in messages %}
+                <div class="flash">{{ message }}</div>
+              {% endfor %}
             </div>
-            <div class="front"></div>
-            </div>
-        </a>
-        </li>
-
-        <li id="nav-2" class="nav-item">
-        <a href="{{ url_for('pages.about') }}" aria-label="About">
-            <div class="user-icon">
-            <div class="user-head"></div>
-            <div class="user-body"></div>
-            </div>
-        </a>
-        </li>
-
-        <li id="nav-3" class="nav-item">
-        <a href="{{ url_for('pages.help') }}" aria-label="Help">
-            <div class="help-icon">?</div>
-        </a>
-        </li>
-
-        <li id="nav-4" class="nav-item">
-        <a href="{{ url_for('pages.settings') }}" aria-label="Settings">
-            <div class="settings-icon"></div>
-        </a>
-        </li>
-
-        <li id="nav-5" class="nav-item">
-        <a href="{{ url_for('auth.logout') }}" aria-label="Logout">
-            <div class="logout-icon">
-            <div class="logout-circle"></div>
-            <div class="logout-line"></div>
-            </div>
-        </a>
-        </li>
-
-    </ul>
-    </nav>
-
-    <main>
+          {% endif %}
+        {% endwith %}
         {% block content %}{% endblock %}
+      </div>
     </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        <span>© {{ 2026 }} Exam Portal</span>
+        <span>Professional assessment platform</span>
+      </div>
+    </footer>
+  </div>
+  <script defer src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+  {% block extra_scripts %}{% endblock %}
 </body>
 </html>
