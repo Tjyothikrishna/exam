@@ -19,7 +19,7 @@
                 <span>Exam Portal</span>
             </div>
             <div class="nav-links">
-                <a href="{{ url_for('student.home') }}">Home</a>
+                <a href="{{ url_for('pages.index') }}">Home</a>
                 <a href="{{ url_for('pages.about') }}">About</a>
                 <a href="{{ url_for('pages.help') }}">Help</a>
                 {% if current_user.is_authenticated %}
