@@ -3,67 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-    <script defer src="{{ url_for('static', filename='js/scripts.js') }}"></script>
     <link rel="icon" href="{{ url_for('static', filename='images/logo.png') }}" type="image/png">
+    <title>{% block title %}Exam Portal{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    {% block extra_head %}{% endblock %}
 </head>
-<body>
-    {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        <script>
-            alert("{{ messages[0] }}");
-        </script>
-      {% endif %}
-    {% endwith %}
-   <!-- 3D ROTATING NAVIGATION -->
-    <nav class="rotate-nav">
-    <ul>
-        <li id="nav-1" class="nav-item active">
-        <a href="{{ url_for('student.home') }}" aria-label="Home">
-            <div class="home-icon">
-            <div class="roof">
-                <div class="roof-edge"></div>
+<body class="{% if request.path.startswith('/admin') %}admin-page {% endif %}{% if request.path in ['/login', '/signup'] %}auth-gradient-page {% endif %}{% block body_class %}{% endblock %}">
+    {% if request.path == '/' %}
+    <div id="particles-js" aria-hidden="true"></div>
+    {% endif %}
+
+    {% if current_user.is_authenticated and current_user.role == 'student' and not request.path.startswith('/admin') %}
+    <div class="background-shapes" aria-hidden="true">
+        <span class="shape shape-1"></span>
+        <span class="shape shape-2"></span>
+        <span class="shape shape-3"></span>
+        <span class="shape shape-4"></span>
+    </div>
+    {% endif %}
+
+    <div class="app-shell">
+        <nav class="top-nav">
+            <div class="nav-brand">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo">
+                <span>Exam Portal</span>
             </div>
-            <div class="front"></div>
+            <div class="nav-links">
+                <a href="{{ url_for('pages.index') }}">Home</a>
+                <a href="{{ url_for('pages.about') }}">About</a>
+                <a href="{{ url_for('pages.help') }}">Help</a>
+                {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('auth.logout') }}">Logout</a>
+                {% else %}
+                    <a href="{{ url_for('auth.login') }}">Login</a>
+                {% endif %}
             </div>
-        </a>
-        </li>
+        </nav>
 
-        <li id="nav-2" class="nav-item">
-        <a href="{{ url_for('pages.about') }}" aria-label="About">
-            <div class="user-icon">
-            <div class="user-head"></div>
-            <div class="user-body"></div>
-            </div>
-        </a>
-        </li>
+        <main class="page-main">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="flash-stack">
+                        {% for category, message in messages %}
+                            <div class="flash-msg {{ 'error' if category in ['error', 'danger'] else category }}">{{ message }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
 
-        <li id="nav-3" class="nav-item">
-        <a href="{{ url_for('pages.help') }}" aria-label="Help">
-            <div class="help-icon">?</div>
-        </a>
-        </li>
+            {% block content %}{% endblock %}
+        </main>
 
-        <li id="nav-4" class="nav-item">
-        <a href="{{ url_for('pages.settings') }}" aria-label="Settings">
-            <div class="settings-icon"></div>
-        </a>
-        </li>
+        <footer class="site-footer">
+            <p>&copy; 2026 Exam Portal. All rights reserved.</p>
+        </footer>
+    </div>
 
-        <li id="nav-5" class="nav-item">
-        <a href="{{ url_for('auth.logout') }}" aria-label="Logout">
-            <div class="logout-icon">
-            <div class="logout-circle"></div>
-            <div class="logout-line"></div>
-            </div>
-        </a>
-        </li>
-
-    </ul>
-    </nav>
-
-    <main>
-        {% block content %}{% endblock %}
-    </main>
+    <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+    <script>
+      if (document.getElementById('particles-js') && window.particlesJS && window.location.pathname === '/') {
+        particlesJS.load('particles-js', "{{ url_for('static', filename='js/particles.json') }}");
+      }
+    </script>
+    {% block extra_scripts %}{% endblock %}
 </body>
 </html>

@@ -1,102 +1,26 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Test</title>
-    <style>
-        body {
-            background: linear-gradient(120deg, #74ebd5, #9face6);
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-
-        .card {
-            background: #fff;
-            width: 650px;         
-            min-height: 420px;     
-            padding: 35px;       
-            border-radius: 12px;   
-            box-shadow: 0 8px 16px rgba(0,0,0,0.3);
-        }
-
-        h3 {
-            margin-bottom: 10px;
-        }
-
-        .progress {
-            font-size: 14px;
-            color: #555;
-            margin-bottom: 15px;
-        }
-
-        .option {
-            margin: 10px 0;
-        }
-
-        button {
-            width: 100%;
-            padding: 12px;
-            margin-top: 15px;
-            background: #28a745;
-            border: none;
-            color: white;
-            font-size: 16px;
-            border-radius: 6px;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background: #218838;
-        }
-    </style>
-</head>
-<body>
-
-<div class="card">
-    <div class="progress">
-        Question {{ index }} of {{ total }}
-    </div>
-
-    <h3>{{ question.question }}</h3>
+{% extends "base.html" %}
+{% block title %}Question {{ index }} | Exam Portal{% endblock %}
+{% block content %}
+<section class="auth-wrap">
+  <article class="card auth-card" style="max-width: 760px;">
+    <p class="auth-subtitle">Question {{ index }} of {{ total }}</p>
+    <h2 class="hero-title">{{ question.question }}</h2>
 
     {% if question.code_snippet %}
-        <pre>{{ question.code_snippet }}</pre>
+      <pre class="card" style="background:#0f172a;color:#e2e8f0;overflow:auto;">{{ question.code_snippet }}</pre>
     {% endif %}
 
-   <form method="POST">
-
-    {% for opt in question.options %}
-    <div class="option">
-        <label>
+    <form method="POST">
+      <div class="question-options">
+        {% for opt in question.options %}
+          <label class="option-item">
             <input type="radio" name="option" value="{{ opt.id }}" required>
-            {{ opt.id }}. {{ opt.text }}
-        </label>
-    </div>
-    {% endfor %}
-
-    {% if feedback %}
-        {% if feedback == 'correct' %}
-            <p style="color:green; font-weight:bold;">✅ Correct Answer!</p>
-        {% else %}
-            <p style="color:red; font-weight:bold;">
-                ❌ Wrong Answer! Correct answer is: <b>{{ correct_answer }}</b>
-            </p>
-        {% endif %}
-
-        <a href="{{ url_for('student.question') }}" class="btn-next">
-            Next Question →
-        </a>
-
-    {% else %}
-        <button type="submit">Submit & Check</button>
-    {% endif %}
-</form>
-
-
-</div>
-
-</body>
-</html>
+            <span>{{ opt.text }}</span>
+          </label>
+        {% endfor %}
+      </div>
+      <button class="btn btn-primary" type="submit">Submit Answer</button>
+    </form>
+  </article>
+</section>
+{% endblock %}
