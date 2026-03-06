@@ -1,21 +1,13 @@
 {% extends "base.html" %}
 {% block title %}Test Result | Exam Portal{% endblock %}
 {% block content %}
-<div class="auth-shell">
-  <section class="auth-card" style="width:min(640px,100%);">
-    <h1 class="auth-title">Test Result</h1>
-    <p class="auth-subtitle">Here is your latest exam performance summary.</p>
-
-    <div class="metric-grid" style="grid-template-columns:repeat(3,minmax(0,1fr)); margin-bottom:0;">
-      <article class="metric-card"><div class="label">Score</div><div class="value">{{ score }}</div></article>
-      <article class="metric-card"><div class="label">Total Questions</div><div class="value">{{ total }}</div></article>
-      <article class="metric-card"><div class="label">Percentage</div><div class="value">{{ percentage }}%</div></article>
-    </div>
-
-    <div class="inline-links" style="margin-top:1rem;">
-      <a class="btn btn-secondary" href="{{ url_for('student.home') }}">Back to Dashboard</a>
-      <a class="btn btn-primary" href="{{ url_for('student.test') }}">Start New Test</a>
-    </div>
-  </section>
-</div>
+<section class="auth-wrap">
+  <div class="card auth-card" style="text-align:center;">
+    <h1>Test Completed</h1>
+    <p class="auth-subtitle">Great effort! Here is your performance summary.</p>
+    <div class="value" style="font-size:2.5rem;">{{ score }}/{{ total }}</div>
+    <p><strong>Percentage:</strong> {{ percentage }}%</p>
+    <a class="btn btn-primary" href="{{ url_for('student.home') }}">Return to Dashboard</a>
+  </div>
+</section>
 {% endblock %}

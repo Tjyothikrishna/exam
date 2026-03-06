@@ -1,25 +1,25 @@
 {% extends "base.html" %}
 {% block title %}Login | Exam Portal{% endblock %}
 {% block content %}
-<div class="auth-shell">
-  <section class="auth-card">
-    <h1 class="auth-title">Welcome back</h1>
-    <p class="auth-subtitle">Sign in to continue your exam journey.</p>
-    <form id="loginForm" class="form-grid" action="{{ url_for('auth.login') }}" method="POST">
-      <div class="field">
-        <label for="email">Email Address</label>
-        <input id="email" name="email" type="email" placeholder="you@example.com" required />
+<section class="auth-wrap">
+  <div class="card auth-card">
+    <h1>Welcome back</h1>
+    <p class="auth-subtitle">Sign in to continue to your dashboard.</p>
+    <form class="form-grid" action="{{ url_for('auth.login') }}" method="POST">
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input id="email" type="email" name="email" placeholder="Enter your email" required>
       </div>
-      <div class="field">
+      <div class="form-group">
         <label for="password">Password</label>
-        <input id="password" name="password" type="password" placeholder="Enter your password" required />
+        <input id="password" type="password" name="password" placeholder="Enter your password" required>
       </div>
-      <button class="btn btn-primary btn-block" type="submit">Log In</button>
+      <button class="btn btn-primary" type="submit">Log In</button>
     </form>
-    <div class="inline-links">
-      <a href="{{ url_for('auth.signup') }}">Create account</a>
+    <div class="inline-actions">
+      <a href="{{ url_for('auth.signup') }}" class="btn btn-outline">Create Account</a>
       <a href="{{ url_for('auth.forgot_password') }}">Forgot password?</a>
     </div>
-  </section>
-</div>
+  </div>
+</section>
 {% endblock %}

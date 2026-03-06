@@ -1,34 +1,26 @@
 {% extends "base.html" %}
-{% block title %}Question | Exam Portal{% endblock %}
+{% block title %}Question {{ index }} | Exam Portal{% endblock %}
 {% block content %}
-<div class="auth-shell">
-  <section class="auth-card" style="width:min(760px,100%);">
-    <h1 class="auth-title">Question {{ index }} of {{ total }}</h1>
-    <p class="auth-subtitle">Select the best answer and continue.</p>
+<section class="auth-wrap">
+  <article class="card auth-card" style="max-width: 760px;">
+    <p class="auth-subtitle">Question {{ index }} of {{ total }}</p>
+    <h2 class="hero-title">{{ question.question }}</h2>
 
     {% if question.code_snippet %}
-      <pre class="card" style="white-space:pre-wrap;">{{ question.code_snippet }}</pre>
+      <pre class="card" style="background:#0f172a;color:#e2e8f0;overflow:auto;">{{ question.code_snippet }}</pre>
     {% endif %}
 
-    <form method="POST" class="form-grid">
-      {% for opt in question.options %}
-      <label class="question-option">
-        <input type="radio" name="option" value="{{ opt.id }}" required>
-        {{ opt.id }}. {{ opt.text }}
-      </label>
-      {% endfor %}
-
-      {% if feedback %}
-        {% if feedback == 'correct' %}
-        <p class="success"><strong>✅ Correct Answer!</strong></p>
-        {% else %}
-        <p class="danger"><strong>❌ Wrong Answer.</strong> Correct answer is: <b>{{ correct_answer }}</b></p>
-        {% endif %}
-        <a href="{{ url_for('student.question') }}" class="btn btn-secondary">Next Question</a>
-      {% else %}
-        <button class="btn btn-primary" type="submit">Submit Answer</button>
-      {% endif %}
+    <form method="POST">
+      <div class="question-options">
+        {% for opt in question.options %}
+          <label class="option-item">
+            <input type="radio" name="option" value="{{ opt.id }}" required>
+            <span>{{ opt.text }}</span>
+          </label>
+        {% endfor %}
+      </div>
+      <button class="btn btn-primary" type="submit">Submit Answer</button>
     </form>
-  </section>
-</div>
+  </article>
+</section>
 {% endblock %}

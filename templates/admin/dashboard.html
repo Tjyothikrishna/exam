@@ -7,75 +7,70 @@
 <div class="dashboard-layout">
   <aside class="sidebar">
     <h3>Admin Panel</h3>
-    <nav class="sidebar-nav">
-      <a class="sidebar-link active" href="{{ url_for('admin.admin_dashboard') }}">Dashboard</a>
-      <a class="sidebar-link" href="{{ url_for('admin.admin_exams') }}">Question Management</a>
-      <a class="sidebar-link" href="{{ url_for('pages.settings') }}">Settings</a>
-      <a class="sidebar-link" href="{{ url_for('auth.logout') }}">Logout</a>
-    </nav>
+    <a class="side-link" href="{{ url_for('admin.admin_dashboard') }}">Dashboard</a>
+    <a class="side-link" href="{{ url_for('admin.admin_exams') }}">Question Management</a>
+    <a class="side-link" href="{{ url_for('admin.admin_exams') }}">Exam Management</a>
+    <a class="side-link" href="{{ url_for('auth.logout') }}">Logout</a>
   </aside>
 
-  <section class="content-panel">
-    <h1 class="page-title">Admin Dashboard</h1>
+  <section>
+    <h2 class="hero-title">Admin Dashboard</h2>
+    <p class="hero-sub">Platform overview, performance metrics, and exam management.</p>
 
-    <div class="metric-grid">
-      <article class="metric-card"><div class="label">Total Students</div><div class="value">{{ stats.total_students }}</div></article>
-      <article class="metric-card"><div class="label">Total Tests</div><div class="value">{{ stats.total_exams }}</div></article>
-      <article class="metric-card"><div class="label">Average Score</div><div class="value">{{ ((chart_data.avg_exam_values | sum) / (chart_data.avg_exam_values | length) | round(2)) if chart_data.avg_exam_values else 0 }}%</div></article>
-      <article class="metric-card"><div class="label">Question Bank</div><div class="value">{{ stats.total_questions }}</div></article>
+    <div class="stats-grid" style="grid-template-columns: repeat(4, minmax(0, 1fr));">
+      <article class="card stat-card"><div class="label">Total Students</div><div class="value">{{ stats.total_students }}</div></article>
+      <article class="card stat-card"><div class="label">Total Tests</div><div class="value">{{ stats.total_exams }}</div></article>
+      <article class="card stat-card"><div class="label">Average Score</div><div class="value">{{ ((chart_data.avg_exam_values | sum) / (chart_data.avg_exam_values|length))|round(2) if chart_data.avg_exam_values else 0 }}%</div></article>
+      <article class="card stat-card"><div class="label">Question Management</div><div class="value">{{ stats.total_questions }}</div></article>
     </div>
 
-    <div class="grid-2">
-      <article class="card">
-        <h3>Question Management</h3>
-        <p class="muted">Manage exams, question sets, and publishing workflows.</p>
-        <a href="{{ url_for('admin.admin_exams') }}" class="btn btn-primary">Go to Exams</a>
-      </article>
+    <div class="content-grid">
       <article class="card">
         <h3>Recent Exams</h3>
         {% if recent_exams %}
-          <ul class="card-list">
+          <table class="list-table">
+            <thead><tr><th>Exam</th><th>Duration</th><th>Action</th></tr></thead>
+            <tbody>
             {% for exam in recent_exams %}
-              <li>{{ exam.title }} ({{ exam.duration }} mins)</li>
+              <tr>
+                <td>{{ exam.title }}</td>
+                <td>{{ exam.duration }} min</td>
+                <td><a class="btn btn-outline" href="{{ url_for('admin.admin_questions', exam_id=exam.id) }}">Manage Questions</a></td>
+              </tr>
             {% endfor %}
-          </ul>
+            </tbody>
+          </table>
         {% else %}
-          <p class="muted">No exams available yet.</p>
+          <p>No exams available yet.</p>
         {% endif %}
       </article>
+      <article class="card">
+        <h3>Graph analytics</h3>
+        <div class="analytics-placeholder">Analytics charts placeholder for score distribution and activity trends.</div>
+        <canvas id="scoreDistributionChart" style="max-height: 260px; margin-top: 16px;"></canvas>
+      </article>
     </div>
-
-    <article class="card" style="margin-top:.9rem;">
-      <h3>Graph Analytics</h3>
-      <p class="muted">Performance analytics overview.</p>
-      <canvas id="adminAnalyticsChart" height="110"></canvas>
-    </article>
   </section>
 </div>
 {% endblock %}
-
 {% block extra_scripts %}
 <script>
-  const labels = {{ chart_data.distribution_labels | tojson }};
-  const values = {{ chart_data.distribution_values | tojson }};
-  const chartEl = document.getElementById('adminAnalyticsChart');
-  if (chartEl) {
-    new Chart(chartEl, {
+  const chartData = {{ chart_data | tojson }};
+  const canvas = document.getElementById('scoreDistributionChart');
+  if (canvas && chartData?.distribution_labels) {
+    new Chart(canvas, {
       type: 'bar',
       data: {
-        labels,
+        labels: chartData.distribution_labels,
         datasets: [{
           label: 'Students by score range',
-          data: values,
-          backgroundColor: 'rgba(34,58,143,0.7)',
-          borderRadius: 8
+          data: chartData.distribution_values,
+          backgroundColor: 'rgba(79, 70, 229, 0.6)',
+          borderColor: 'rgba(79, 70, 229, 1)',
+          borderWidth: 1
         }]
       },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: { legend: { display: true } }
-      }
+      options: { responsive: true, maintainAspectRatio: false }
     });
   }
 </script>

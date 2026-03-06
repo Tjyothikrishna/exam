@@ -4,59 +4,63 @@
 <div class="dashboard-layout">
   <aside class="sidebar">
     <h3>Student Panel</h3>
-    <nav class="sidebar-nav">
-      <a class="sidebar-link active" href="{{ url_for('student.home') }}">Dashboard</a>
-      <a class="sidebar-link" href="{{ url_for('student.test') }}">Start Test</a>
-      <a class="sidebar-link" href="{{ url_for('pages.settings') }}">Profile Settings</a>
-      <a class="sidebar-link" href="{{ url_for('auth.logout') }}">Logout</a>
-    </nav>
+    <a class="side-link" href="{{ url_for('student.home') }}">Dashboard</a>
+    <a class="side-link" href="{{ url_for('student.test') }}">Start Test</a>
+    <a class="side-link" href="{{ url_for('pages.settings') }}">Profile Settings</a>
+    <a class="side-link" href="{{ url_for('auth.logout') }}">Logout</a>
   </aside>
 
-  <section class="content-panel">
-    <h1 class="page-title">Student Dashboard</h1>
+  <section>
+    <h2 class="hero-title">Welcome, {{ user.first_name }}</h2>
+    <p class="hero-sub">Track your progress and begin your next assessment.</p>
 
-    <div class="metric-grid">
-      <article class="metric-card"><div class="label">Total Tests Taken</div><div class="value">{{ total_attempts }}</div></article>
-      <article class="metric-card"><div class="label">Average Score</div><div class="value">{{ avg_percentage }}%</div></article>
-      <article class="metric-card"><div class="label">Best Score</div><div class="value">{{ (current_user.attempts | map(attribute='percentage') | max | round(2)) if current_user.attempts else 0 }}%</div></article>
-      <article class="metric-card"><div class="label">Latest Result</div><div class="value">{{ (last_attempt.percentage ~ '%') if last_attempt else 'N/A' }}</div></article>
+    <div class="stats-grid">
+      <article class="card stat-card"><div class="label">Total Tests Taken</div><div class="value">{{ total_attempts }}</div></article>
+      <article class="card stat-card"><div class="label">Average Score</div><div class="value">{{ avg_percentage }}%</div></article>
+      <article class="card stat-card"><div class="label">Best Score</div><div class="value">{{ last_attempt.percentage if last_attempt else 0 }}%</div></article>
     </div>
 
-    <div class="grid-2">
+    <div class="content-grid">
       <article class="card">
         <h3>Student Profile</h3>
         <p><strong>Name:</strong> {{ user.first_name }} {{ user.last_name }}</p>
         <p><strong>Email:</strong> {{ user.email }}</p>
-        <p><strong>Mobile:</strong> {{ user.mobile_number or 'N/A' }}</p>
-        <p><strong>Gender:</strong> {{ user.gender or 'N/A' }}</p>
-        <p><strong>Trend:</strong> {{ performance_trend or 'Not enough attempts' }}</p>
+        <p><strong>Mobile:</strong> {{ user.mobile_number }}</p>
+        <p><strong>Gender:</strong> {{ user.gender }}</p>
+        <a class="btn btn-primary" href="{{ url_for('student.test') }}">Start Test</a>
       </article>
 
       <article class="card">
         <h3>Latest Test Result</h3>
         {% if last_attempt %}
-          <p><strong>Score:</strong> {{ last_attempt.score }}/{{ last_attempt.total_questions }}</p>
+          <p><strong>Score:</strong> {{ last_attempt.score }} / {{ last_attempt.total_questions }}</p>
           <p><strong>Percentage:</strong> {{ last_attempt.percentage }}%</p>
-          <p><strong>Status:</strong> <span class="{{ 'success' if last_attempt.passed else 'danger' }}">{{ 'Passed' if last_attempt.passed else 'Failed' }}</span></p>
+          <p><strong>Status:</strong> {{ 'Passed' if last_attempt.passed else 'Needs Improvement' }}</p>
           <p><strong>Date:</strong> {{ last_attempt.attempted_at.strftime('%d %b %Y, %I:%M %p') }}</p>
+          {% if performance_trend %}<p><strong>Trend:</strong> {{ performance_trend }}</p>{% endif %}
         {% else %}
-          <p class="muted">No attempts yet.</p>
+          <p>No test attempts yet. Start your first exam now.</p>
         {% endif %}
       </article>
     </div>
 
-    <article class="card" style="margin-top:.9rem;">
+    <article class="card" style="margin-top: 16px;">
       <h3>Exam History</h3>
-      {% if current_user.attempts %}
-        <ul class="card-list">
-          {% for attempt in current_user.attempts[:5] %}
-            <li>{{ attempt.attempted_at.strftime('%d %b %Y') }} — {{ attempt.percentage }}%</li>
-          {% endfor %}
-        </ul>
+      {% if last_attempt %}
+      <table class="list-table">
+        <thead><tr><th>Test</th><th>Score</th><th>Percentage</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>{{ last_attempt.test_name }}</td>
+            <td>{{ last_attempt.score }}/{{ last_attempt.total_questions }}</td>
+            <td>{{ last_attempt.percentage }}%</td>
+            <td>{{ 'Passed' if last_attempt.passed else 'Failed' }}</td>
+          </tr>
+        </tbody>
+      </table>
       {% else %}
-        <p class="muted">No exam history available yet.</p>
+      <p>No exam history available.</p>
       {% endif %}
-      <a href="{{ url_for('student.test') }}" class="btn btn-primary" style="margin-top:.5rem;">Start Test</a>
     </article>
   </section>
 </div>

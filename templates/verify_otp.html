@@ -1,17 +1,17 @@
 {% extends "base.html" %}
 {% block title %}Verify OTP | Exam Portal{% endblock %}
 {% block content %}
-<div class="auth-shell">
-  <section class="auth-card">
-    <h1 class="auth-title">Verify OTP</h1>
-    <p class="auth-subtitle">Enter the one-time code sent to your email.</p>
-    <form id="otpForm" class="form-grid" action="{{ url_for('auth.verify_otp') }}" method="POST">
-      <div class="field">
-        <label for="otp">OTP Code</label>
-        <input id="otp" type="text" name="otp" maxlength="6" placeholder="Enter OTP" required />
+<section class="auth-wrap">
+  <div class="card auth-card">
+    <h1>OTP verification</h1>
+    <p class="auth-subtitle">Enter the OTP sent to your email address.</p>
+    <form class="form-grid" action="{{ url_for('auth.verify_otp') }}" method="POST">
+      <div class="form-group">
+        <label for="otp">OTP</label>
+        <input id="otp" type="text" name="otp" required>
       </div>
-      <button class="btn btn-primary btn-block" type="submit">Verify</button>
+      <button class="btn btn-primary" type="submit">Verify OTP</button>
     </form>
-  </section>
-</div>
+  </div>
+</section>
 {% endblock %}

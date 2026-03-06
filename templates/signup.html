@@ -1,41 +1,41 @@
 {% extends "base.html" %}
 {% block title %}Sign Up | Exam Portal{% endblock %}
 {% block content %}
-<div class="auth-shell">
-  <section class="auth-card" style="width:min(700px,100%);">
-    <h1 class="auth-title">Create your account</h1>
-    <p class="auth-subtitle">Register to start taking exams.</p>
-    <form id="signupForm" class="form-grid" action="{{ url_for('auth.signup') }}" method="POST" enctype="multipart/form-data">
-      <div class="form-row-2">
-        <div class="field"><label for="first_name">First Name</label><input id="first_name" name="first_name" type="text" required></div>
-        <div class="field"><label for="last_name">Last Name</label><input id="last_name" name="last_name" type="text" required></div>
+<section class="auth-wrap">
+  <div class="card auth-card">
+    <h1>Create account</h1>
+    <p class="auth-subtitle">Use your details to register as a student.</p>
+    <form class="form-grid" action="{{ url_for('auth.signup') }}" method="POST" enctype="multipart/form-data">
+      <div class="form-grid two-col">
+        <div class="form-group"><label for="first_name">First Name</label><input id="first_name" name="first_name" required></div>
+        <div class="form-group"><label for="last_name">Last Name</label><input id="last_name" name="last_name" required></div>
       </div>
-      <div class="form-row-2">
-        <div class="field"><label for="email">Email</label><input id="email" name="email" type="email" required></div>
-        <div class="field"><label for="mobile_number">Mobile Number</label><input id="mobile_number" name="mobile_number" type="text" required></div>
+      <div class="form-grid two-col">
+        <div class="form-group"><label for="email">Email</label><input id="email" type="email" name="email" required></div>
+        <div class="form-group"><label for="mobile_number">Mobile Number</label><input id="mobile_number" name="mobile_number" required></div>
       </div>
-      <div class="form-row-2">
-        <div class="field"><label for="password">Password</label><input id="password" name="password" type="password" required></div>
-        <div class="field"><label for="confirm_password">Confirm Password</label><input id="confirm_password" name="confirm_password" type="password" required></div>
+      <div class="form-grid two-col">
+        <div class="form-group"><label for="password">Password</label><input id="password" type="password" name="password" required></div>
+        <div class="form-group"><label for="confirm_password">Confirm Password</label><input id="confirm_password" type="password" name="confirm_password" required></div>
       </div>
-      <div class="form-row-2">
-        <div class="field"><label for="college_name">College Name</label><input id="college_name" name="college_name" type="text" required></div>
-        <div class="field"><label for="qualification">Qualification</label><input id="qualification" name="qualification" type="text" required></div>
-      </div>
-      <div class="field">
-        <label>Gender</label>
-        <div style="display:flex; gap:1rem; padding-top:.35rem;">
-          <label><input type="radio" name="gender" value="Male" required> Male</label>
-          <label><input type="radio" name="gender" value="Female" required> Female</label>
-          <label><input type="radio" name="gender" value="Other" required> Other</label>
+      <div class="form-grid two-col">
+        <div class="form-group">
+          <label for="gender">Gender</label>
+          <select id="gender" name="gender" required>
+            <option value="">Select gender</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Other">Other</option>
+          </select>
         </div>
+        <div class="form-group"><label for="profile_pic">Profile Picture (optional)</label><input id="profile_pic" type="file" name="profile_pic" accept="image/*"></div>
       </div>
-      <button class="btn btn-primary btn-block" type="submit">Create Account</button>
+      <button class="btn btn-primary" type="submit">Register</button>
     </form>
-    <div class="inline-links">
-      <span class="muted">Already have an account?</span>
+    <div class="inline-actions">
+      <span>Already have an account?</span>
       <a href="{{ url_for('auth.login') }}">Login</a>
     </div>
-  </section>
-</div>
+  </div>
+</section>
 {% endblock %}
