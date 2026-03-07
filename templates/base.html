@@ -14,6 +14,11 @@
 <body class="{% if request.path.startswith('/admin') %}admin-page {% endif %}{% if request.path in ['/login', '/signup'] %}auth-gradient-page {% endif %}{% block body_class %}{% endblock %}">
     {% if request.path == '/' %}
     <div id="particles-js" class="particles-layer" aria-hidden="true"></div>
+    <div class="wave-wrapper" aria-hidden="true">
+        <div class="wave wave-top"></div>
+        <div class="wave wave-middle"></div>
+        <div class="wave wave-bottom"></div>
+    </div>
     {% endif %}
 
     {% if request.path in ['/login', '/signup'] %}
@@ -28,6 +33,13 @@
     <div class="background-shapes" aria-hidden="true">
         <span class="shape"></span><span class="shape"></span><span class="shape"></span>
         <span class="shape"></span><span class="shape"></span><span class="shape"></span><span class="shape"></span>
+        <span class="shape"></span>
+        <span class="shape"></span>
+        <span class="shape"></span>
+        <span class="shape"></span>
+        <span class="shape"></span>
+        <span class="shape"></span>
+        <span class="shape"></span>
     </div>
     {% endif %}
 
@@ -72,6 +84,8 @@
     <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
     <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
     <script src="{{ url_for('static', filename='js/exam.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/animations.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
     {% block extra_scripts %}{% endblock %}
 </body>
 </html>

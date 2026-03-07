@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta, timezone
 
 from flask import Blueprint, jsonify, flash, redirect, render_template, request, session, url_for
+from flask import Blueprint, flash, redirect, render_template, request, session, url_for
 from flask_login import current_user, login_required
 
 from app.models import QuestionSet, TestAttempt
@@ -132,6 +133,19 @@ def question():
             flagged_map[qid_key] = not bool(flagged_map.get(qid_key, False))
             session["flagged_map"] = flagged_map
 
+
+    answers_map = session.get("answers_map", {})
+
+    if request.method == "POST":
+        current_index = _clamp_question_index(int(request.form.get("current_index", current_index)), total)
+        current_question = questions[current_index]
+
+        selected_option_raw = request.form.get("option")
+        if selected_option_raw:
+            answers_map[str(current_question["id"])] = int(selected_option_raw)
+            session["answers_map"] = answers_map
+
+        action = request.form.get("action", "next")
         if action == "prev":
             target_index = _clamp_question_index(current_index - 1, total)
             session["current_index"] = target_index
@@ -167,6 +181,32 @@ def question():
                 "is_flagged": bool(flagged_map.get(q_key, False)),
             }
         )
+
+        if action == "submit":
+            return redirect(url_for("student.submit_test"))
+
+        target_index = _clamp_question_index(current_index + 1, total)
+        session["current_index"] = target_index
+        return redirect(url_for("student.question", q=target_index))
+
+    session["current_index"] = current_index
+    current_question = questions[current_index]
+
+    selected_option_id = answers_map.get(str(current_question["id"]))
+    answered_indexes = {
+        idx for idx, q in enumerate(questions) if str(q["id"]) in answers_map
+    }
+
+    remaining_seconds = 0
+    exam_ends_at = session.get("exam_ends_at")
+    if exam_ends_at:
+        try:
+            ends_at = datetime.fromisoformat(exam_ends_at)
+            if ends_at.tzinfo is None:
+                ends_at = ends_at.replace(tzinfo=timezone.utc)
+            remaining_seconds = max(0, int((ends_at - datetime.now(timezone.utc)).total_seconds()))
+        except ValueError:
+            remaining_seconds = 0
 
     return render_template(
         "question.html",
@@ -223,6 +263,8 @@ def review_exam():
         flagged=flagged,
         palette=palette,
         remaining_seconds=_remaining_seconds_from_session(),
+        answered_indexes=answered_indexes,
+        remaining_seconds=remaining_seconds,
     )
 
 
