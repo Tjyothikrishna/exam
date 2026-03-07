@@ -26,16 +26,6 @@
 
     <div class="content-grid">
       <article class="card card-hover">
-    <p class="hero-sub">Track your progress and begin your next assessment.</p>
-
-    <div class="stats-grid">
-      <article class="card stat-card"><div class="label">Total Tests Taken</div><div class="value">{{ total_attempts }}</div></article>
-      <article class="card stat-card"><div class="label">Average Score</div><div class="value">{{ avg_percentage }}%</div></article>
-      <article class="card stat-card"><div class="label">Best Score</div><div class="value">{{ last_attempt.percentage if last_attempt else 0 }}%</div></article>
-    </div>
-
-    <div class="content-grid">
-      <article class="card">
         <h3>Student Profile</h3>
         <p><strong>Name:</strong> {{ user.first_name }} {{ user.last_name }}</p>
         <p><strong>Email:</strong> {{ user.email }}</p>
@@ -90,31 +80,16 @@
         {% endif %}
       </div>
       {% endif %}
-      {% endif %}
-    <article class="card" style="margin-top: 16px;">
-      <h3>Exam History</h3>
-      {% if last_attempt %}
-      <table class="list-table">
-        <thead><tr><th>Test</th><th>Score</th><th>Percentage</th><th>Status</th></tr></thead>
-        <tbody>
-          <tr>
-            <td>{{ last_attempt.test_name }}</td>
-            <td>{{ last_attempt.score }}/{{ last_attempt.total_questions }}</td>
-            <td>{{ last_attempt.percentage }}%</td>
-            <td>{{ 'Passed' if last_attempt.passed else 'Failed' }}</td>
-          </tr>
-        </tbody>
-      </table>
       {% else %}
       <p>No exam history available.</p>
       {% endif %}
     </article>
+
     <article class="card card-hover" style="margin-top: 16px;">
       <h3>Score Analytics</h3>
       <p class="hero-sub">Total Exams Taken: <strong>{{ chart_data.total_exams }}</strong></p>
       <canvas id="studentScoreTrendChart" style="max-height: 260px;"></canvas>
     </article>
-
   </section>
 </div>
 {% else %}
@@ -194,14 +169,5 @@
     });
   }
 </script>
-<section class="landing-section card-hover" style="margin-top:16px; text-align:center;">
-<section class="landing-section" style="margin-top:16px; text-align:center;">
-  <h3>Quick Links</h3>
-  <div class="footer-links">
-    <a href="{{ url_for('pages.about') }}">About</a>
-    <a href="{{ url_for('pages.help') }}">Help</a>
-    <a href="mailto:support@examportal.local">Contact</a>
-  </div>
-</section>
 {% endif %}
 {% endblock %}

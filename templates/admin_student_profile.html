@@ -24,7 +24,6 @@
 
     <article class="card card-hover" style="margin-top:16px;">
       <h3>Student Details</h3>
-    <article class="card">
       <p><strong>ID:</strong> {{ student.id }}</p>
       <p><strong>Name:</strong> {{ student.first_name }} {{ student.last_name }}</p>
       <p><strong>Email:</strong> {{ student.email }}</p>
@@ -63,11 +62,11 @@
       <div style="margin-top:12px;">
         <a class="btn btn-outline" href="{{ url_for('admin.admin_students') }}">Back to Students</a>
       </div>
-      <a class="btn btn-outline" href="{{ url_for('admin.admin_students') }}">Back to Students</a>
     </article>
   </section>
 </div>
 {% endblock %}
+
 {% block extra_scripts %}
 <script>
   const chartData = {{ chart_data | tojson }};
