@@ -11,6 +11,8 @@
       <div class="progress-fill" style="width: {{ ((index / total) * 100) | round(1) }}%;"></div>
     </div>
 
+  <article class="card auth-card" style="max-width: 760px;">
+    <p class="auth-subtitle">Question {{ index }} of {{ total }}</p>
     <h2 class="hero-title">{{ question.question }}</h2>
 
     {% if question.code_snippet %}
@@ -21,6 +23,9 @@
       <div class="question-options enhanced-options">
         {% for opt in question.options %}
           <label class="option-item option-hover">
+      <div class="question-options">
+        {% for opt in question.options %}
+          <label class="option-item">
             <input type="radio" name="option" value="{{ opt.id }}" required>
             <span>{{ opt.text }}</span>
           </label>

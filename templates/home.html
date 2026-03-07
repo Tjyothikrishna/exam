@@ -23,6 +23,16 @@
 
     <div class="content-grid">
       <article class="card card-hover">
+    <p class="hero-sub">Track your progress and begin your next assessment.</p>
+
+    <div class="stats-grid">
+      <article class="card stat-card"><div class="label">Total Tests Taken</div><div class="value">{{ total_attempts }}</div></article>
+      <article class="card stat-card"><div class="label">Average Score</div><div class="value">{{ avg_percentage }}%</div></article>
+      <article class="card stat-card"><div class="label">Best Score</div><div class="value">{{ last_attempt.percentage if last_attempt else 0 }}%</div></article>
+    </div>
+
+    <div class="content-grid">
+      <article class="card">
         <h3>Student Profile</h3>
         <p><strong>Name:</strong> {{ user.first_name }} {{ user.last_name }}</p>
         <p><strong>Email:</strong> {{ user.email }}</p>
@@ -35,6 +45,9 @@
         <h3>Latest Test Result</h3>
         {% if last_attempt %}
           <p><strong>Exam:</strong> {{ last_attempt.question_set.title if last_attempt.question_set else ('Exam ' ~ last_attempt.question_set_id) }}</p>
+      <article class="card">
+        <h3>Latest Test Result</h3>
+        {% if last_attempt %}
           <p><strong>Score:</strong> {{ last_attempt.score }} / {{ last_attempt.total_questions }}</p>
           <p><strong>Percentage:</strong> {{ last_attempt.percentage }}%</p>
           <p><strong>Status:</strong> {{ 'Passed' if last_attempt.passed else 'Needs Improvement' }}</p>
@@ -77,6 +90,20 @@
         {% endif %}
       </div>
       {% endif %}
+    <article class="card" style="margin-top: 16px;">
+      <h3>Exam History</h3>
+      {% if last_attempt %}
+      <table class="list-table">
+        <thead><tr><th>Test</th><th>Score</th><th>Percentage</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>{{ last_attempt.test_name }}</td>
+            <td>{{ last_attempt.score }}/{{ last_attempt.total_questions }}</td>
+            <td>{{ last_attempt.percentage }}%</td>
+            <td>{{ 'Passed' if last_attempt.passed else 'Failed' }}</td>
+          </tr>
+        </tbody>
+      </table>
       {% else %}
       <p>No exam history available.</p>
       {% endif %}
@@ -85,6 +112,7 @@
 </div>
 {% else %}
 <section class="landing-hero card-hover">
+<section class="landing-hero">
   <h1>Online Examination Platform</h1>
   <p>Practice, Learn, and Evaluate Your Skills</p>
   <div class="landing-actions">
@@ -95,6 +123,7 @@
 
 <div class="landing-grid">
   <section class="landing-section card-hover">
+  <section class="landing-section">
     <h2>Features</h2>
     <ul class="feature-list">
       <li>Secure Online Exams</li>
@@ -105,6 +134,7 @@
   </section>
 
   <section class="how-it-works card-hover">
+  <section class="how-it-works">
     <h2>How It Works</h2>
     <ol class="steps-list">
       <li>Register</li>
@@ -116,6 +146,7 @@
 </div>
 
 <section class="landing-section card-hover" style="margin-top:16px; text-align:center;">
+<section class="landing-section" style="margin-top:16px; text-align:center;">
   <h3>Quick Links</h3>
   <div class="footer-links">
     <a href="{{ url_for('pages.about') }}">About</a>
