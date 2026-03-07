@@ -1,159 +1,109 @@
 {% extends "base.html" %}
+{% block title %}Exam Portal{% endblock %}
 {% block content %}
+{% if current_user.is_authenticated and user is defined %}
+<div class="dashboard-layout">
+  <aside class="sidebar">
+    <h3>Student Panel</h3>
+    <a class="side-link" href="{{ url_for('student.home') }}">Dashboard</a>
+    <a class="side-link" href="{{ url_for('student.test') }}">Start Test</a>
+    <a class="side-link" href="{{ url_for('pages.settings') }}">Profile Settings</a>
+    <a class="side-link" href="{{ url_for('auth.logout') }}">Logout</a>
+  </aside>
 
-<head>
-    <title>Student Home</title>
-    <link rel="stylesheet"
-          href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <section>
+    <h2 class="hero-title">Welcome, {{ user.first_name }}</h2>
+    <p class="hero-sub">Track your progress and begin your next assessment.</p>
 
-    <style>
-        .home-container {
-            display: flex;
-            gap: 20px;
-            padding: 20px;
-        }
-
-        .left-section, .right-section {
-            flex: 1;
-        }
-
-        .middle-section {
-            flex: 2;
-            text-align: center;
-        }
-
-        .card {
-            border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-            margin-bottom: 20px;
-        }
-
-        .stat-number {
-            font-size: 42px;
-            font-weight: bold;
-            color: #007bff;
-        }
-
-        .badge-large {
-            font-size: 16px;
-            padding: 10px 18px;
-        }
-
-        @media (max-width: 768px) {
-            .home-container {
-                flex-direction: column;
-            }
-        }
-    </style>
-</head>
-
-<div class="home-container">
-
-    <!-- LEFT : USER DETAILS -->
-    <div class="left-section">
-        <div class="card">
-            <div class="card-body text-center">
-                <h4>User Details</h4>
-
-                <img src="{{ user.profile_picture if user.profile_picture else url_for('static', filename='images/default_profile.png') }}"
-                     class="img-thumbnail mb-3"
-                     style="width:180px;height:180px;">
-
-                <p><strong>Name:</strong> {{ user.first_name }} {{ user.last_name }}</p>
-                <p><strong>Email:</strong> {{ user.email }}</p>
-                <p><strong>Mobile:</strong> {{ user.mobile_number }}</p>
-                <p><strong>Gender:</strong> {{ user.gender }}</p>
-            </div>
-        </div>
+    <div class="stats-grid">
+      <article class="card stat-card"><div class="label">Total Tests Taken</div><div class="value">{{ total_attempts }}</div></article>
+      <article class="card stat-card"><div class="label">Average Score</div><div class="value">{{ avg_percentage }}%</div></article>
+      <article class="card stat-card"><div class="label">Best Score</div><div class="value">{{ last_attempt.percentage if last_attempt else 0 }}%</div></article>
     </div>
 
-    <!-- MIDDLE : EXAM STATUS -->
-    <div class="middle-section">
+    <div class="content-grid">
+      <article class="card">
+        <h3>Student Profile</h3>
+        <p><strong>Name:</strong> {{ user.first_name }} {{ user.last_name }}</p>
+        <p><strong>Email:</strong> {{ user.email }}</p>
+        <p><strong>Mobile:</strong> {{ user.mobile_number }}</p>
+        <p><strong>Gender:</strong> {{ user.gender }}</p>
+        <a class="btn btn-primary" href="{{ url_for('student.test') }}">Start Test</a>
+      </article>
 
-        <h3 class="mb-4">Exam Status</h3>
-
-        <!-- Total Attempts -->
-        <div class="card">
-            <div class="card-body">
-                <h5>Total Attempts</h5>
-                <div class="stat-number">{{ total_attempts }}</div>
-            </div>
-        </div>
-
-        <!-- Last Attempt -->
-        <div class="card">
-            <div class="card-body">
-                <h5>Last Attempt</h5>
-
-                {% if last_attempt %}
-                    <p>
-                        <strong>Test:</strong> {{ last_attempt.test_name }}<br>
-                        <strong>Score:</strong>
-                        {{ last_attempt.score }}/{{ last_attempt.total_questions }}<br>
-                        <strong>Percentage:</strong> {{ last_attempt.percentage }}%<br>
-                        <strong>Status:</strong>
-                        {% if last_attempt.passed %}
-                            <span class="text-success">Passed</span>
-                        {% else %}
-                            <span class="text-danger">Failed</span>
-                        {% endif %}
-                    </p>
-                {% else %}
-                    <p class="text-muted">No attempts yet.</p>
-                {% endif %}
-            </div>
-        </div>
-
-        <!-- Performance Trend -->
-        {% if performance_trend %}
-        <div class="card">
-            <div class="card-body">
-                <h5>Performance Trend</h5>
-
-                {% if performance_trend == 'Improved' %}
-                    <span class="badge badge-success badge-large">Improved 📈</span>
-                {% elif performance_trend == 'Declined' %}
-                    <span class="badge badge-danger badge-large">Declined 📉</span>
-                {% else %}
-                    <span class="badge badge-warning badge-large">Same ➖</span>
-                {% endif %}
-            </div>
-        </div>
+      <article class="card">
+        <h3>Latest Test Result</h3>
+        {% if last_attempt %}
+          <p><strong>Score:</strong> {{ last_attempt.score }} / {{ last_attempt.total_questions }}</p>
+          <p><strong>Percentage:</strong> {{ last_attempt.percentage }}%</p>
+          <p><strong>Status:</strong> {{ 'Passed' if last_attempt.passed else 'Needs Improvement' }}</p>
+          <p><strong>Date:</strong> {{ last_attempt.attempted_at.strftime('%d %b %Y, %I:%M %p') }}</p>
+          {% if performance_trend %}<p><strong>Trend:</strong> {{ performance_trend }}</p>{% endif %}
+        {% else %}
+          <p>No test attempts yet. Start your first exam now.</p>
         {% endif %}
-
-        <!-- Average Score -->
-        {% if avg_percentage %}
-        <div class="card">
-            <div class="card-body">
-                <h5>Average Score</h5>
-                <div class="stat-number">{{ avg_percentage }}%</div>
-            </div>
-        </div>
-        {% endif %}
-
-        <a href="{{ url_for('student.test') }}" class="btn btn-primary btn-lg mt-3">
-            Take New Exam
-        </a>
+      </article>
     </div>
 
-    <!-- RIGHT : LAST EXAM DATE -->
-    <div class="right-section">
-        <div class="card">
-            <div class="card-body text-center">
-                <h4>Last Exam</h4>
+    <article class="card" style="margin-top: 16px;">
+      <h3>Exam History</h3>
+      {% if last_attempt %}
+      <table class="list-table">
+        <thead><tr><th>Test</th><th>Score</th><th>Percentage</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>{{ last_attempt.test_name }}</td>
+            <td>{{ last_attempt.score }}/{{ last_attempt.total_questions }}</td>
+            <td>{{ last_attempt.percentage }}%</td>
+            <td>{{ 'Passed' if last_attempt.passed else 'Failed' }}</td>
+          </tr>
+        </tbody>
+      </table>
+      {% else %}
+      <p>No exam history available.</p>
+      {% endif %}
+    </article>
+  </section>
+</div>
+{% else %}
+<section class="landing-hero">
+  <h1>Online Examination Platform</h1>
+  <p>Practice, Learn, and Evaluate Your Skills</p>
+  <div class="landing-actions">
+    <a class="btn btn-primary" href="{{ url_for('student.test') if current_user.is_authenticated else url_for('auth.signup') }}">Start Exam</a>
+    <a class="btn btn-outline" href="{{ url_for('auth.login') }}">Student Login</a>
+  </div>
+</section>
 
-                {% if last_attempt %}
-                    <p>
-                        <strong>Date:</strong><br>
-                        {{ last_attempt.attempted_at.strftime('%d %b %Y, %I:%M %p') }}
-                    </p>
-                {% else %}
-                    <p class="text-muted">No exam taken yet.</p>
-                {% endif %}
-            </div>
-        </div>
-    </div>
+<div class="landing-grid">
+  <section class="landing-section">
+    <h2>Features</h2>
+    <ul class="feature-list">
+      <li>Secure Online Exams</li>
+      <li>Instant Results</li>
+      <li>Performance Analytics</li>
+      <li>Admin Question Management</li>
+    </ul>
+  </section>
 
+  <section class="how-it-works">
+    <h2>How It Works</h2>
+    <ol class="steps-list">
+      <li>Register</li>
+      <li>Verify Email</li>
+      <li>Take Exam</li>
+      <li>View Results</li>
+    </ol>
+  </section>
 </div>
 
+<section class="landing-section" style="margin-top:16px; text-align:center;">
+  <h3>Quick Links</h3>
+  <div class="footer-links">
+    <a href="{{ url_for('pages.about') }}">About</a>
+    <a href="{{ url_for('pages.help') }}">Help</a>
+    <a href="mailto:support@examportal.local">Contact</a>
+  </div>
+</section>
+{% endif %}
 {% endblock %}
