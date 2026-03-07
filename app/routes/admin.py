@@ -149,3 +149,30 @@ def edit_question(question_id: int):
     flash("Edit is not available in legacy-compatible mode. Delete and recreate question.")
     question = Question.query.get_or_404(question_id)
     return redirect(url_for("admin.admin_questions", exam_id=question.question_set_id))
+
+
+@bp.route('/students', endpoint='admin_students')
+@login_required
+@admin_required
+def admin_students():
+    students = User.query.filter_by(role='student').order_by(User.created_at.desc()).all()
+    return render_template('admin_students.html', students=students)
+
+
+@bp.route('/students/<int:student_id>', endpoint='student_profile')
+@login_required
+@admin_required
+def student_profile(student_id: int):
+    student = User.query.filter_by(id=student_id, role='student').first_or_404()
+    return render_template('admin_student_profile.html', student=student)
+
+
+@bp.post('/students/<int:student_id>/delete', endpoint='delete_student')
+@login_required
+@admin_required
+def delete_student(student_id: int):
+    student = User.query.filter_by(id=student_id, role='student').first_or_404()
+    db.session.delete(student)
+    db.session.commit()
+    flash('Student deleted successfully.')
+    return redirect(url_for('admin.admin_students'))

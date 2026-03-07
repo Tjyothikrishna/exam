@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Student Profile | Admin{% endblock %}
+{% block content %}
+<div class="dashboard-layout">
+  <aside class="sidebar">
+    <h3>Admin Panel</h3>
+    <a class="side-link" href="{{ url_for('admin.admin_dashboard') }}">Dashboard</a>
+    <a class="side-link" href="{{ url_for('admin.admin_exams') }}">Question Management</a>
+    <a class="side-link" href="{{ url_for('admin.admin_students') }}">Student Management</a>
+    <a class="side-link" href="{{ url_for('auth.logout') }}">Logout</a>
+  </aside>
+
+  <section>
+    <h2 class="hero-title">Student Profile</h2>
+    <article class="card">
+      <p><strong>ID:</strong> {{ student.id }}</p>
+      <p><strong>Name:</strong> {{ student.first_name }} {{ student.last_name }}</p>
+      <p><strong>Email:</strong> {{ student.email }}</p>
+      <p><strong>Mobile Number:</strong> {{ student.mobile_number or '-' }}</p>
+      <p><strong>Gender:</strong> {{ student.gender or '-' }}</p>
+      <p><strong>Registration Date:</strong> {{ student.created_at.strftime('%d %b %Y, %I:%M %p') if student.created_at else '-' }}</p>
+      <a class="btn btn-outline" href="{{ url_for('admin.admin_students') }}">Back to Students</a>
+    </article>
+  </section>
+</div>
+{% endblock %}

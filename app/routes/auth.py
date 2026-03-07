@@ -1,4 +1,4 @@
-from flask import Blueprint, flash, redirect, render_template, request, session, url_for
+from flask import Blueprint, current_app, flash, redirect, render_template, request, session, url_for
 from flask_login import current_user, login_required, login_user, logout_user
 
 from app.services.auth_service import (
@@ -48,11 +48,13 @@ def signup():
         session["signup_otp_expiry"] = otp_expiry()
         session["signup_data"] = signup_data
 
-        if not send_otp_email(email, otp, purpose="signup verification"):
-            flash("Failed to send OTP email. Check EMAIL_USER/EMAIL_PASS in .env.")
-            return render_template("signup.html")
+        try:
+            send_otp_email(email, otp, purpose="signup verification")
+            flash("OTP sent to your email.")
+        except Exception as exc:
+            current_app.logger.exception("Email sending failed for signup OTP to %s: %s", email, exc)
+            flash("Account details saved and OTP generated, but email delivery failed. Check server logs for SMTP error.")
 
-        flash("OTP sent to your email.")
         return redirect(url_for("auth.verify_otp"))
 
     return render_template("signup.html")
@@ -91,8 +93,6 @@ def verify_otp():
 
     return render_template("verify_otp.html")
 
-    return render_template("verify_otp.html")
-
 @bp.route("/login", methods=["GET", "POST"], endpoint="login")
 def login():
     if current_user.is_authenticated:
@@ -126,11 +126,13 @@ def forgot_password():
         session["reset_otp"] = str(otp)
         session["reset_otp_expiry"] = otp_expiry()
 
-        if not send_otp_email(email, otp, purpose="password reset"):
-            flash("Failed to send OTP email. Check EMAIL_USER/EMAIL_PASS in .env.")
-            return render_template("forgot_password.html")
+        try:
+            send_otp_email(email, otp, purpose="password reset")
+            flash("OTP sent to your email.")
+        except Exception as exc:
+            current_app.logger.exception("Email sending failed for password reset OTP to %s: %s", email, exc)
+            flash("OTP generated, but email delivery failed. Check server logs for SMTP error.")
 
-        flash("OTP sent to your email.")
         return redirect(url_for("auth.reset_password"))
 
     return render_template("forgot_password.html")
