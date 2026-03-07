@@ -16,8 +16,8 @@
     </div>
 
     <div class="navigator-grid">
-      {% for p in palette %}
-      <a class="navigator-item {% if p.is_flagged %}flagged{% elif p.is_answered %}answered{% else %}unanswered{% endif %}" href="{{ url_for('student.question', q=p.index) }}">{{ p.number }}</a>
+      {% for i in range(total) %}
+      <a class="navigator-item {% if i in flagged_indexes %}flagged{% elif i in answered_indexes %}answered{% else %}unanswered{% endif %}" href="{{ url_for('student.question', q=i) }}">{{ i + 1 }}</a>
       {% endfor %}
     </div>
 
