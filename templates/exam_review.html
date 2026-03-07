@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Review Exam | Exam Portal{% endblock %}
+{% block content %}
+<section class="auth-wrap">
+  <article class="card auth-card card-hover" style="max-width: 900px;">
+    <div class="question-meta-row">
+      <h2 class="hero-title" style="margin:0;">Review Before Submit</h2>
+      <div class="exam-timer" data-exam-timer data-remaining-seconds="{{ remaining_seconds }}">00:00</div>
+    </div>
+
+    <div class="stats-grid" style="grid-template-columns: repeat(4, minmax(0, 1fr)); margin-bottom:16px;">
+      <article class="card stat-card"><div class="label">Total Questions</div><div class="value">{{ total }}</div></article>
+      <article class="card stat-card"><div class="label">Answered</div><div class="value">{{ answered }}</div></article>
+      <article class="card stat-card"><div class="label">Unanswered</div><div class="value">{{ unanswered }}</div></article>
+      <article class="card stat-card"><div class="label">Flagged</div><div class="value">{{ flagged }}</div></article>
+    </div>
+
+    <div class="navigator-grid">
+      {% for p in palette %}
+      <a class="navigator-item {% if p.is_flagged %}flagged{% elif p.is_answered %}answered{% else %}unanswered{% endif %}" href="{{ url_for('student.question', q=p.index) }}">{{ p.number }}</a>
+      {% endfor %}
+    </div>
+
+    <div class="question-nav-actions" style="margin-top:18px;">
+      <a class="btn btn-outline" href="{{ url_for('student.question', q=0) }}">Return to Exam</a>
+      <form method="POST" action="{{ url_for('student.submit_test') }}">
+        <button class="btn btn-primary" type="submit">Final Submit</button>
+      </form>
+    </div>
+  </article>
+</section>
+{% endblock %}

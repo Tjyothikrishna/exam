@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta, timezone
 
+from flask import Blueprint, jsonify, flash, redirect, render_template, request, session, url_for
 from flask import Blueprint, flash, redirect, render_template, request, session, url_for
 from flask_login import current_user, login_required
 
@@ -14,6 +15,19 @@ def _clamp_question_index(index: int, total: int) -> int:
     if total <= 0:
         return 0
     return max(0, min(index, total - 1))
+
+
+def _remaining_seconds_from_session() -> int:
+    exam_ends_at = session.get("exam_ends_at")
+    if not exam_ends_at:
+        return 0
+    try:
+        ends_at = datetime.fromisoformat(exam_ends_at)
+        if ends_at.tzinfo is None:
+            ends_at = ends_at.replace(tzinfo=timezone.utc)
+        return max(0, int((ends_at - datetime.now(timezone.utc)).total_seconds()))
+    except ValueError:
+        return 0
 
 
 @bp.route("/home", endpoint="home")
@@ -77,6 +91,7 @@ def test():
     session["question_set_id"] = question_set_id
     session["current_index"] = 0
     session["answers_map"] = {}
+    session["flagged_map"] = {}
     session["exam_duration_minutes"] = duration_minutes
     session["exam_ends_at"] = (datetime.now(timezone.utc) + timedelta(minutes=duration_minutes)).isoformat()
 
@@ -93,6 +108,31 @@ def question():
 
     total = len(questions)
     current_index = _clamp_question_index(request.args.get("q", session.get("current_index", 0), type=int), total)
+
+    answers_map = session.get("answers_map", {})
+    flagged_map = session.get("flagged_map", {})
+
+    if request.method == "POST":
+        current_index = _clamp_question_index(int(request.form.get("current_index", current_index)), total)
+        current_question = questions[current_index]
+        qid_key = str(current_question["id"])
+
+        selected_option_raw = request.form.get("option")
+        if selected_option_raw:
+            answers_map[qid_key] = int(selected_option_raw)
+            session["answers_map"] = answers_map
+
+        action = request.form.get("action", "next")
+
+        if action == "autosave":
+            flagged_map[qid_key] = request.form.get("flagged", "0") == "1"
+            session["flagged_map"] = flagged_map
+            return jsonify({"ok": True})
+
+        if action == "flag_toggle":
+            flagged_map[qid_key] = not bool(flagged_map.get(qid_key, False))
+            session["flagged_map"] = flagged_map
+
 
     answers_map = session.get("answers_map", {})
 
@@ -115,6 +155,32 @@ def question():
             target_index = _clamp_question_index(int(request.form.get("target_index", current_index)), total)
             session["current_index"] = target_index
             return redirect(url_for("student.question", q=target_index))
+
+        if action == "review":
+            return redirect(url_for("student.review_exam"))
+
+        target_index = _clamp_question_index(current_index + 1, total)
+        session["current_index"] = target_index
+        return redirect(url_for("student.question", q=target_index))
+
+    session["current_index"] = current_index
+    current_question = questions[current_index]
+    qid_key = str(current_question["id"])
+
+    selected_option_id = answers_map.get(qid_key)
+
+    palette = []
+    for idx, q in enumerate(questions):
+        q_key = str(q["id"])
+        palette.append(
+            {
+                "index": idx,
+                "number": idx + 1,
+                "is_current": idx == current_index,
+                "is_answered": q_key in answers_map,
+                "is_flagged": bool(flagged_map.get(q_key, False)),
+            }
+        )
 
         if action == "submit":
             return redirect(url_for("student.submit_test"))
@@ -155,6 +221,48 @@ def question():
         index=current_index + 1,
         total=total,
         selected_option_id=selected_option_id,
+        remaining_seconds=_remaining_seconds_from_session(),
+        palette=palette,
+        is_flagged=bool(flagged_map.get(qid_key, False)),
+    )
+
+
+@bp.route("/review_exam", endpoint="review_exam")
+@login_required
+@student_required
+def review_exam():
+    questions = session.get("questions", [])
+    if not questions:
+        return redirect(url_for("student.home"))
+
+    answers_map = session.get("answers_map", {})
+    flagged_map = session.get("flagged_map", {})
+
+    total = len(questions)
+    answered = len(answers_map)
+    flagged = sum(1 for q in questions if flagged_map.get(str(q["id"]), False))
+    unanswered = max(0, total - answered)
+
+    palette = []
+    for idx, q in enumerate(questions):
+        q_key = str(q["id"])
+        palette.append(
+            {
+                "index": idx,
+                "number": idx + 1,
+                "is_answered": q_key in answers_map,
+                "is_flagged": bool(flagged_map.get(q_key, False)),
+            }
+        )
+
+    return render_template(
+        "exam_review.html",
+        total=total,
+        answered=answered,
+        unanswered=unanswered,
+        flagged=flagged,
+        palette=palette,
+        remaining_seconds=_remaining_seconds_from_session(),
         answered_indexes=answered_indexes,
         remaining_seconds=remaining_seconds,
     )
@@ -201,6 +309,7 @@ def submit_test():
     for key in [
         "questions",
         "answers_map",
+        "flagged_map",
         "current_index",
         "question_set_id",
         "exam_duration_minutes",
