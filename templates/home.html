@@ -13,6 +13,16 @@
 
   <section>
     <h2 class="hero-title">Welcome, {{ user.first_name }}</h2>
+    <p class="hero-sub">Track your progress and review your latest attempts.</p>
+
+    <div class="stats-grid">
+      <article class="card stat-card card-hover"><div class="label">Total Tests Taken</div><div class="value">{{ total_attempts }}</div></article>
+      <article class="card stat-card card-hover"><div class="label">Average Score</div><div class="value">{{ avg_percentage }}%</div></article>
+      <article class="card stat-card card-hover"><div class="label">Best Score</div><div class="value">{{ best_score }}%</div></article>
+    </div>
+
+    <div class="content-grid">
+      <article class="card card-hover">
     <p class="hero-sub">Track your progress and begin your next assessment.</p>
 
     <div class="stats-grid">
@@ -31,6 +41,10 @@
         <a class="btn btn-primary" href="{{ url_for('student.test') }}">Start Test</a>
       </article>
 
+      <article class="card card-hover">
+        <h3>Latest Test Result</h3>
+        {% if last_attempt %}
+          <p><strong>Exam:</strong> {{ last_attempt.question_set.title if last_attempt.question_set else ('Exam ' ~ last_attempt.question_set_id) }}</p>
       <article class="card">
         <h3>Latest Test Result</h3>
         {% if last_attempt %}
@@ -45,6 +59,37 @@
       </article>
     </div>
 
+    <article class="card card-hover" style="margin-top: 16px;">
+      <h3>Recent Exam History (Last 25)</h3>
+      {% if attempts_page and attempts_page.items %}
+      <table class="list-table">
+        <thead>
+          <tr><th>Exam Name</th><th>Date</th><th>Score</th><th>Percentage</th><th>Result</th></tr>
+        </thead>
+        <tbody>
+          {% for attempt in attempts_page.items %}
+          <tr>
+            <td>{{ attempt.question_set.title if attempt.question_set else ('Exam ' ~ attempt.question_set_id) }}</td>
+            <td>{{ attempt.attempted_at.strftime('%d %b %Y, %I:%M %p') }}</td>
+            <td>{{ attempt.score }}/{{ attempt.total_questions }}</td>
+            <td>{{ attempt.percentage }}%</td>
+            <td>{{ 'Pass' if attempt.passed else 'Fail' }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      {% if attempts_page.pages > 1 %}
+      <div class="pager-row">
+        {% if attempts_page.has_prev %}
+          <a class="btn btn-outline" href="{{ url_for('student.home', page=attempts_page.prev_num) }}">Previous</a>
+        {% endif %}
+        <span>Page {{ attempts_page.page }} of {{ attempts_page.pages }}</span>
+        {% if attempts_page.has_next %}
+          <a class="btn btn-outline" href="{{ url_for('student.home', page=attempts_page.next_num) }}">Next</a>
+        {% endif %}
+      </div>
+      {% endif %}
     <article class="card" style="margin-top: 16px;">
       <h3>Exam History</h3>
       {% if last_attempt %}
@@ -66,6 +111,7 @@
   </section>
 </div>
 {% else %}
+<section class="landing-hero card-hover">
 <section class="landing-hero">
   <h1>Online Examination Platform</h1>
   <p>Practice, Learn, and Evaluate Your Skills</p>
@@ -76,6 +122,7 @@
 </section>
 
 <div class="landing-grid">
+  <section class="landing-section card-hover">
   <section class="landing-section">
     <h2>Features</h2>
     <ul class="feature-list">
@@ -86,6 +133,7 @@
     </ul>
   </section>
 
+  <section class="how-it-works card-hover">
   <section class="how-it-works">
     <h2>How It Works</h2>
     <ol class="steps-list">
@@ -97,6 +145,7 @@
   </section>
 </div>
 
+<section class="landing-section card-hover" style="margin-top:16px; text-align:center;">
 <section class="landing-section" style="margin-top:16px; text-align:center;">
   <h3>Quick Links</h3>
   <div class="footer-links">

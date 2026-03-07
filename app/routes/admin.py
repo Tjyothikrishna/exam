@@ -164,6 +164,27 @@ def admin_students():
 @admin_required
 def student_profile(student_id: int):
     student = User.query.filter_by(id=student_id, role='student').first_or_404()
+    attempts = (
+        TestAttempt.query.filter_by(user_id=student.id)
+        .order_by(TestAttempt.attempted_at.desc())
+        .limit(50)
+        .all()
+    )
+
+    scores = [float(a.percentage or 0) for a in attempts]
+    analytics = {
+        'total_exams_taken': len(attempts),
+        'average_score': round(sum(scores) / len(scores), 2) if scores else 0,
+        'highest_score': round(max(scores), 2) if scores else 0,
+        'lowest_score': round(min(scores), 2) if scores else 0,
+    }
+
+    chart_data = {
+        'labels': [a.attempted_at.strftime('%d %b') for a in attempts][::-1],
+        'scores': scores[::-1],
+    }
+
+    return render_template('admin_student_profile.html', student=student, attempts=attempts, analytics=analytics, chart_data=chart_data)
     return render_template('admin_student_profile.html', student=student)
 
 

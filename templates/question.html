@@ -2,6 +2,15 @@
 {% block title %}Question {{ index }} | Exam Portal{% endblock %}
 {% block content %}
 <section class="auth-wrap">
+  <article class="card auth-card question-card card-hover" style="max-width: 860px;" data-total="{{ total }}" data-index="{{ index }}">
+    <div class="question-meta-row">
+      <p class="auth-subtitle">Question {{ index }} of {{ total }}</p>
+      <div class="exam-timer" data-exam-timer>00:00</div>
+    </div>
+    <div class="progress-track" aria-label="Exam progress">
+      <div class="progress-fill" style="width: {{ ((index / total) * 100) | round(1) }}%;"></div>
+    </div>
+
   <article class="card auth-card" style="max-width: 760px;">
     <p class="auth-subtitle">Question {{ index }} of {{ total }}</p>
     <h2 class="hero-title">{{ question.question }}</h2>
@@ -11,6 +20,9 @@
     {% endif %}
 
     <form method="POST">
+      <div class="question-options enhanced-options">
+        {% for opt in question.options %}
+          <label class="option-item option-hover">
       <div class="question-options">
         {% for opt in question.options %}
           <label class="option-item">
