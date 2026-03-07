@@ -185,7 +185,6 @@ def student_profile(student_id: int):
     }
 
     return render_template('admin_student_profile.html', student=student, attempts=attempts, analytics=analytics, chart_data=chart_data)
-    return render_template('admin_student_profile.html', student=student)
 
 
 @bp.post('/students/<int:student_id>/delete', endpoint='delete_student')

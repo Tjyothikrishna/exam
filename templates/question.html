@@ -2,17 +2,29 @@
 {% block title %}Question {{ index }} | Exam Portal{% endblock %}
 {% block content %}
 <section class="auth-wrap">
-  <article class="card auth-card question-card card-hover" style="max-width: 860px;" data-total="{{ total }}" data-index="{{ index }}">
+  <article class="card auth-card question-card card-hover" style="max-width: 900px;" data-total="{{ total }}" data-index="{{ index }}">
     <div class="question-meta-row">
       <p class="auth-subtitle">Question {{ index }} of {{ total }}</p>
-      <div class="exam-timer" data-exam-timer>00:00</div>
+      <div class="exam-timer" data-exam-timer data-remaining-seconds="{{ remaining_seconds }}">00:00</div>
     </div>
     <div class="progress-track" aria-label="Exam progress">
       <div class="progress-fill" style="width: {{ ((index / total) * 100) | round(1) }}%;"></div>
     </div>
 
-  <article class="card auth-card" style="max-width: 760px;">
-    <p class="auth-subtitle">Question {{ index }} of {{ total }}</p>
+    <div class="navigator-grid">
+      {% for q_index in range(total) %}
+      <form method="POST" class="navigator-item-form">
+        <input type="hidden" name="action" value="go">
+        <input type="hidden" name="target_index" value="{{ q_index }}">
+        <input type="hidden" name="current_index" value="{{ index - 1 }}">
+        {% if selected_option_id %}
+        <input type="hidden" name="option" value="{{ selected_option_id }}">
+        {% endif %}
+        <button type="submit" class="navigator-item {% if q_index == index - 1 %}current{% endif %} {% if q_index in answered_indexes %}answered{% endif %}">{{ q_index + 1 }}</button>
+      </form>
+      {% endfor %}
+    </div>
+
     <h2 class="hero-title">{{ question.question }}</h2>
 
     {% if question.code_snippet %}
@@ -20,18 +32,24 @@
     {% endif %}
 
     <form method="POST">
+      <input type="hidden" name="current_index" value="{{ index - 1 }}">
       <div class="question-options enhanced-options">
         {% for opt in question.options %}
-          <label class="option-item option-hover">
-      <div class="question-options">
-        {% for opt in question.options %}
-          <label class="option-item">
-            <input type="radio" name="option" value="{{ opt.id }}" required>
+          <label class="option-item option-hover {% if selected_option_id == opt.id %}selected-option{% endif %}">
+            <input type="radio" name="option" value="{{ opt.id }}" {% if selected_option_id == opt.id %}checked{% endif %}>
             <span>{{ opt.text }}</span>
           </label>
         {% endfor %}
       </div>
-      <button class="btn btn-primary" type="submit">Submit Answer</button>
+
+      <div class="question-nav-actions">
+        <button class="btn btn-outline" type="submit" name="action" value="prev" {% if index == 1 %}disabled{% endif %}>Previous Question</button>
+        {% if index < total %}
+          <button class="btn btn-primary" type="submit" name="action" value="next">Next Question</button>
+        {% else %}
+          <button class="btn btn-primary" type="submit" name="action" value="submit">Submit Exam</button>
+        {% endif %}
+      </div>
     </form>
   </article>
 </section>

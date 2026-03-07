@@ -1,5 +1,8 @@
 {% extends "base.html" %}
 {% block title %}Exam Portal{% endblock %}
+{% block extra_head %}
+{% if current_user.is_authenticated and user is defined %}<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>{% endif %}
+{% endblock %}
 {% block content %}
 {% if current_user.is_authenticated and user is defined %}
 <div class="dashboard-layout">
@@ -108,6 +111,12 @@
       <p>No exam history available.</p>
       {% endif %}
     </article>
+    <article class="card card-hover" style="margin-top: 16px;">
+      <h3>Score Analytics</h3>
+      <p class="hero-sub">Total Exams Taken: <strong>{{ chart_data.total_exams }}</strong></p>
+      <canvas id="studentScoreTrendChart" style="max-height: 260px;"></canvas>
+    </article>
+
   </section>
 </div>
 {% else %}
@@ -144,7 +153,83 @@
     </ol>
   </section>
 </div>
+{% else %}
+<section class="landing-hero card-hover">
+  <h1>Online Examination Platform</h1>
+  <p>Practice, Learn, and Evaluate Your Skills</p>
+  <div class="landing-actions">
+    <a class="btn btn-primary" href="{{ url_for('student.test') if current_user.is_authenticated else url_for('auth.signup') }}">Start Exam</a>
+    <a class="btn btn-outline" href="{{ url_for('auth.login') }}">Student Login</a>
+  </div>
+</section>
 
+<div class="landing-grid">
+  <section class="landing-section card-hover">
+    <h2>Features</h2>
+    <ul class="feature-list">
+      <li>Secure Online Exams</li>
+      <li>Instant Results</li>
+      <li>Performance Analytics</li>
+      <li>Admin Question Management</li>
+    </ul>
+  </section>
+
+  <section class="how-it-works card-hover">
+    <h2>How It Works</h2>
+    <ol class="steps-list">
+      <li>Register</li>
+      <li>Verify Email</li>
+      <li>Take Exam</li>
+      <li>View Results</li>
+    </ol>
+  </section>
+</div>
+
+<section class="landing-section card-hover" style="margin-top:16px; text-align:center;">
+  <h3>Quick Links</h3>
+  <div class="footer-links">
+    <a href="{{ url_for('pages.about') }}">About</a>
+    <a href="{{ url_for('pages.help') }}">Help</a>
+    <a href="mailto:support@examportal.local">Contact</a>
+  </div>
+</section>
+{% endif %}
+{% endblock %}
+
+{% block extra_scripts %}
+{{ super() }}
+{% if current_user.is_authenticated and user is defined %}
+<script>
+  const studentChart = {{ chart_data | tojson }};
+  const chartCanvas = document.getElementById('studentScoreTrendChart');
+  if (chartCanvas && studentChart?.labels?.length) {
+    new Chart(chartCanvas, {
+      type: 'line',
+      data: {
+        labels: studentChart.labels,
+        datasets: [
+          {
+            label: 'Score %',
+            data: studentChart.scores,
+            borderColor: 'rgba(42, 79, 182, 1)',
+            backgroundColor: 'rgba(42, 79, 182, 0.14)',
+            fill: true,
+            tension: 0.3
+          },
+          {
+            label: 'Average %',
+            data: studentChart.average,
+            borderColor: 'rgba(207, 31, 46, 0.9)',
+            borderDash: [6, 6],
+            fill: false,
+            tension: 0
+          }
+        ]
+      },
+      options: { responsive: true, maintainAspectRatio: false }
+    });
+  }
+</script>
 <section class="landing-section card-hover" style="margin-top:16px; text-align:center;">
 <section class="landing-section" style="margin-top:16px; text-align:center;">
   <h3>Quick Links</h3>
