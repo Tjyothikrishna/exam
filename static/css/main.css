@@ -15,59 +15,116 @@ body {
   font-family: 'Inter', sans-serif;
   color: var(--text);
   background: linear-gradient(135deg, #d2232a 0%, #ac2135 30%, #2a4fb6 70%, #183c9e 100%);
-  background-size: 140% 140%;
   background-attachment: fixed;
+  min-height: 100vh;
 }
 
+a { color: inherit; text-decoration: none; }
+
+/* ===== Background animation layers (behind all content) ===== */
+.wave-wrapper,
+.auth-gradient-layers,
+.background-shapes {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+/* Ted McDo-inspired animated waves */
+.wave {
+  position: absolute;
+  left: -50%;
+  width: 200%;
+  height: 20em;
+  animation: wave 18s -3s linear infinite;
+  transform: translate3d(0, 0, 0);
+  opacity: 0.6;
+  bottom: 0;
+  border-radius: 42%;
+}
+.wave-top {
+  bottom: -10.5em;
+  background: rgba(255, 255, 255, 0.2);
+}
+.wave-middle {
+  bottom: -12.25em;
+  animation: wave 26s linear reverse infinite;
+  background: rgba(255, 255, 255, 0.28);
+  opacity: 0.55;
+}
+.wave-bottom {
+  bottom: -14em;
+  animation: wave 20s -1s reverse infinite;
+  background: rgba(255, 255, 255, 0.35);
+  opacity: 0.45;
+}
+@keyframes wave {
+  2% { transform: translateX(1); }
+  25% { transform: translateX(-25%); }
+  50% { transform: translateX(-50%); }
+  75% { transform: translateX(-25%); }
+  100% { transform: translateX(1); }
+}
+
+/* Mohaiman-inspired animated gradient layers */
 .auth-gradient-page {
-  animation: animatedGradient 10s ease infinite;
+  background-color: #274d9e;
+}
+.auth-gradient-layers .bg {
+  animation: slide 3s ease-in-out infinite alternate;
+  background-image: linear-gradient(-60deg, #1b3f97 50%, #d2232a 50%);
+  bottom: 0;
+  left: -50%;
+  opacity: 0.45;
+  position: absolute;
+  right: -50%;
+  top: 0;
+}
+.auth-gradient-layers .bg2 { animation-direction: alternate-reverse; animation-duration: 4s; }
+.auth-gradient-layers .bg3 { animation-duration: 5s; }
+@keyframes slide {
+  0% { transform: translateX(-25%); }
+  100% { transform: translateX(25%); }
 }
 
+/* Shshaw-inspired floating blobs */
+.background-shapes .shape {
+  position: absolute;
+  display: block;
+  width: 160px;
+  height: 160px;
+  background: rgba(255, 255, 255, 0.16);
+  animation: float 22s linear infinite;
+  bottom: -180px;
+  border-radius: 35% 65% 52% 48% / 55% 45% 55% 45%;
+}
+.background-shapes .shape:nth-child(1) { left: 5%; width: 90px; height: 90px; animation-delay: 0s; }
+.background-shapes .shape:nth-child(2) { left: 18%; animation-delay: 2s; animation-duration: 16s; }
+.background-shapes .shape:nth-child(3) { left: 35%; width: 220px; height: 220px; animation-delay: 4s; }
+.background-shapes .shape:nth-child(4) { left: 52%; width: 120px; height: 120px; animation-delay: 0s; animation-duration: 18s; }
+.background-shapes .shape:nth-child(5) { left: 68%; width: 180px; height: 180px; animation-delay: 3s; }
+.background-shapes .shape:nth-child(6) { left: 80%; width: 110px; height: 110px; animation-delay: 7s; animation-duration: 14s; }
+.background-shapes .shape:nth-child(7) { left: 92%; width: 200px; height: 200px; animation-delay: 5s; }
+@keyframes float {
+  0% { transform: translateY(0) rotate(0deg); opacity: 0.25; }
+  100% { transform: translateY(-1100px) rotate(720deg); opacity: 0; }
+}
+
+/* Admin-only light animated logo palette */
 .admin-page {
-  background: linear-gradient(160deg, #f9fbff 0%, #f1f5ff 40%, #ffeef0 100%);
-  background-attachment: fixed;
+  background: linear-gradient(120deg, #f6f8ff, #fff2f4, #f2f6ff, #fef7f8);
+  background-size: 220% 220%;
+  animation: adminShift 12s ease infinite;
 }
-
-@keyframes animatedGradient {
+@keyframes adminShift {
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
 }
 
-#particles-js {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-}
-
-.background-shapes {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  overflow: hidden;
-  pointer-events: none;
-}
-
-.shape {
-  position: absolute;
-  border-radius: 50%;
-  background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.35), rgba(255,255,255,0.08));
-  animation: floatY 12s ease-in-out infinite;
-}
-
-.shape-1 { width: 180px; height: 180px; left: 8%; top: 20%; animation-delay: 0s; }
-.shape-2 { width: 120px; height: 120px; right: 10%; top: 26%; animation-delay: 1.2s; }
-.shape-3 { width: 240px; height: 240px; right: 24%; bottom: 10%; animation-delay: 2.4s; }
-.shape-4 { width: 90px; height: 90px; left: 30%; bottom: 18%; animation-delay: 3s; }
-
-@keyframes floatY {
-  0%, 100% { transform: translateY(0) scale(1); }
-  50% { transform: translateY(-24px) scale(1.04); }
-}
-
-a { color: inherit; text-decoration: none; }
-
+/* Keep app content over backgrounds */
 .app-shell,
 .top-nav,
 .page-main,
