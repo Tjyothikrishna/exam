@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Student Management | Admin{% endblock %}
+{% block content %}
+<div class="dashboard-layout">
+  <aside class="sidebar">
+    <h3>Admin Panel</h3>
+    <a class="side-link" href="{{ url_for('admin.admin_dashboard') }}">Dashboard</a>
+    <a class="side-link" href="{{ url_for('admin.admin_exams') }}">Question Management</a>
+    <a class="side-link" href="{{ url_for('admin.admin_students') }}">Student Management</a>
+    <a class="side-link" href="{{ url_for('auth.logout') }}">Logout</a>
+  </aside>
+
+  <section>
+    <h2 class="hero-title">Student Management</h2>
+    <p class="hero-sub">View and manage all registered student accounts.</p>
+
+    <article class="card">
+      <h3>All Registered Students</h3>
+      {% if students %}
+      <table class="list-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Email</th>
+            <th>Mobile Number</th>
+            <th>Gender</th>
+            <th>Registration Date</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for student in students %}
+          <tr>
+            <td>{{ student.id }}</td>
+            <td>{{ student.first_name }}</td>
+            <td>{{ student.last_name }}</td>
+            <td>{{ student.email }}</td>
+            <td>{{ student.mobile_number or '-' }}</td>
+            <td>{{ student.gender or '-' }}</td>
+            <td>{{ student.created_at.strftime('%d %b %Y') if student.created_at else '-' }}</td>
+            <td>
+              <a class="btn btn-outline" href="{{ url_for('admin.student_profile', student_id=student.id) }}">View Profile</a>
+              <form method="POST" action="{{ url_for('admin.delete_student', student_id=student.id) }}" style="display:inline-block; margin-left:6px;" onsubmit="return confirm('Delete this student?');">
+                <button class="btn btn-primary" type="submit">Delete</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <p>No students registered yet.</p>
+      {% endif %}
+    </article>
+  </section>
+</div>
+{% endblock %}
