@@ -14,6 +14,7 @@ def create_app() -> Flask:
     migrate.init_app(app, db)
     bcrypt.init_app(app)
     login_manager.init_app(app)
+    login_manager.login_view = "auth.login"
 
     @login_manager.user_loader
     def load_user(user_id: str):

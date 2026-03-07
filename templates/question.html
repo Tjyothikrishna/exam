@@ -1,102 +1,56 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Test</title>
-    <style>
-        body {
-            background: linear-gradient(120deg, #74ebd5, #9face6);
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-
-        .card {
-            background: #fff;
-            width: 650px;         
-            min-height: 420px;     
-            padding: 35px;       
-            border-radius: 12px;   
-            box-shadow: 0 8px 16px rgba(0,0,0,0.3);
-        }
-
-        h3 {
-            margin-bottom: 10px;
-        }
-
-        .progress {
-            font-size: 14px;
-            color: #555;
-            margin-bottom: 15px;
-        }
-
-        .option {
-            margin: 10px 0;
-        }
-
-        button {
-            width: 100%;
-            padding: 12px;
-            margin-top: 15px;
-            background: #28a745;
-            border: none;
-            color: white;
-            font-size: 16px;
-            border-radius: 6px;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background: #218838;
-        }
-    </style>
-</head>
-<body>
-
-<div class="card">
-    <div class="progress">
-        Question {{ index }} of {{ total }}
+{% extends "base.html" %}
+{% block title %}Question {{ index }} | Exam Portal{% endblock %}
+{% block content %}
+<section class="auth-wrap">
+  <article class="card auth-card question-card card-hover" style="max-width: 900px;" data-total="{{ total }}" data-index="{{ index }}">
+    <div class="question-meta-row">
+      <p class="auth-subtitle">Question {{ index }} of {{ total }}</p>
+      <div class="exam-timer" data-exam-timer data-remaining-seconds="{{ remaining_seconds }}">00:00</div>
+    </div>
+    <div class="progress-track" aria-label="Exam progress">
+      <div class="progress-fill" style="width: {{ ((index / total) * 100) | round(1) }}%;"></div>
     </div>
 
-    <h3>{{ question.question }}</h3>
+    <div class="navigator-grid">
+      {% for q_index in range(total) %}
+      <form method="POST" class="navigator-item-form">
+        <input type="hidden" name="action" value="go">
+        <input type="hidden" name="target_index" value="{{ q_index }}">
+        <input type="hidden" name="current_index" value="{{ index - 1 }}">
+        {% if selected_option_id %}
+        <input type="hidden" name="option" value="{{ selected_option_id }}">
+        {% endif %}
+        <button type="submit" class="navigator-item {% if q_index == index - 1 %}current{% endif %} {% if q_index in answered_indexes %}answered{% endif %}">{{ q_index + 1 }}</button>
+      </form>
+      {% endfor %}
+    </div>
+
+    <h2 class="hero-title">{{ question.question }}</h2>
 
     {% if question.code_snippet %}
-        <pre>{{ question.code_snippet }}</pre>
+      <pre class="card" style="background:#0f172a;color:#e2e8f0;overflow:auto;">{{ question.code_snippet }}</pre>
     {% endif %}
 
-   <form method="POST">
+    <form method="POST">
+      <input type="hidden" name="current_index" value="{{ index - 1 }}">
+      <div class="question-options enhanced-options">
+        {% for opt in question.options %}
+          <label class="option-item option-hover {% if selected_option_id == opt.id %}selected-option{% endif %}">
+            <input type="radio" name="option" value="{{ opt.id }}" {% if selected_option_id == opt.id %}checked{% endif %}>
+            <span>{{ opt.text }}</span>
+          </label>
+        {% endfor %}
+      </div>
 
-    {% for opt in question.options %}
-    <div class="option">
-        <label>
-            <input type="radio" name="option" value="{{ opt.id }}" required>
-            {{ opt.id }}. {{ opt.text }}
-        </label>
-    </div>
-    {% endfor %}
-
-    {% if feedback %}
-        {% if feedback == 'correct' %}
-            <p style="color:green; font-weight:bold;">✅ Correct Answer!</p>
+      <div class="question-nav-actions">
+        <button class="btn btn-outline" type="submit" name="action" value="prev" {% if index == 1 %}disabled{% endif %}>Previous Question</button>
+        {% if index < total %}
+          <button class="btn btn-primary" type="submit" name="action" value="next">Next Question</button>
         {% else %}
-            <p style="color:red; font-weight:bold;">
-                ❌ Wrong Answer! Correct answer is: <b>{{ correct_answer }}</b>
-            </p>
+          <button class="btn btn-primary" type="submit" name="action" value="submit">Submit Exam</button>
         {% endif %}
-
-        <a href="{{ url_for('student.question') }}" class="btn-next">
-            Next Question →
-        </a>
-
-    {% else %}
-        <button type="submit">Submit & Check</button>
-    {% endif %}
-</form>
-
-
-</div>
-
-</body>
-</html>
+      </div>
+    </form>
+  </article>
+</section>
+{% endblock %}
