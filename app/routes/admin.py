@@ -149,3 +149,50 @@ def edit_question(question_id: int):
     flash("Edit is not available in legacy-compatible mode. Delete and recreate question.")
     question = Question.query.get_or_404(question_id)
     return redirect(url_for("admin.admin_questions", exam_id=question.question_set_id))
+
+
+@bp.route('/students', endpoint='admin_students')
+@login_required
+@admin_required
+def admin_students():
+    students = User.query.filter_by(role='student').order_by(User.created_at.desc()).all()
+    return render_template('admin_students.html', students=students)
+
+
+@bp.route('/students/<int:student_id>', endpoint='student_profile')
+@login_required
+@admin_required
+def student_profile(student_id: int):
+    student = User.query.filter_by(id=student_id, role='student').first_or_404()
+    attempts = (
+        TestAttempt.query.filter_by(user_id=student.id)
+        .order_by(TestAttempt.attempted_at.desc())
+        .limit(50)
+        .all()
+    )
+
+    scores = [float(a.percentage or 0) for a in attempts]
+    analytics = {
+        'total_exams_taken': len(attempts),
+        'average_score': round(sum(scores) / len(scores), 2) if scores else 0,
+        'highest_score': round(max(scores), 2) if scores else 0,
+        'lowest_score': round(min(scores), 2) if scores else 0,
+    }
+
+    chart_data = {
+        'labels': [a.attempted_at.strftime('%d %b') for a in attempts][::-1],
+        'scores': scores[::-1],
+    }
+
+    return render_template('admin_student_profile.html', student=student, attempts=attempts, analytics=analytics, chart_data=chart_data)
+
+
+@bp.post('/students/<int:student_id>/delete', endpoint='delete_student')
+@login_required
+@admin_required
+def delete_student(student_id: int):
+    student = User.query.filter_by(id=student_id, role='student').first_or_404()
+    db.session.delete(student)
+    db.session.commit()
+    flash('Student deleted successfully.')
+    return redirect(url_for('admin.admin_students'))
