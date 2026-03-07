@@ -3,7 +3,7 @@ from datetime import datetime, timedelta, timezone
 from flask import Blueprint, flash, jsonify, redirect, render_template, request, session, url_for
 from flask_login import current_user, login_required
 
-from app.models import QuestionSet, TestAttempt
+from app.models import Question, QuestionSet, TestAttempt
 from app.services.exam_service import load_random_question_set, save_attempt
 from .common import student_required
 
@@ -120,6 +120,7 @@ def question():
         if selected_option_raw:
             answers_map[qid_key] = int(selected_option_raw)
             session["answers_map"] = answers_map
+            session["answers"] = answers_map
 
         action = request.form.get("action")
 
@@ -149,6 +150,9 @@ def question():
 
         if action == "submit":
             return redirect(url_for("student.submit_test"))
+
+        if current_index >= total - 1:
+            return redirect(url_for("student.review_exam"))
 
         target_index = _clamp_question_index(current_index + 1, total)
         session["current_index"] = target_index
@@ -201,10 +205,15 @@ def review_exam():
     answers_map = session.get("answers_map", {})
     flagged_map = session.get("flagged_map", {})
 
+    # Keep total dynamic based on all questions loaded in the active exam session.
     total = len(questions)
     answered = len(answers_map)
     flagged = sum(1 for q in questions if flagged_map.get(str(q["id"]), False))
     unanswered = max(0, total - answered)
+
+    # Also compute total questions available in DB dynamically.
+    questions_in_db = Question.query.all()
+    _total_questions_in_db = len(questions_in_db)
 
     palette = []
     for idx, q in enumerate(questions):
@@ -218,8 +227,9 @@ def review_exam():
             }
         )
 
-    answers_map = session.get("answers", {})
-    answered_indexes = [int(k) for k in answers_map.keys()]
+    session_answers = session.get("answers", {})
+    answered_indexes = [idx for idx, q in enumerate(questions) if str(q["id"]) in session_answers or str(q["id"]) in answers_map]
+    flagged_indexes = [idx for idx, q in enumerate(questions) if bool(flagged_map.get(str(q["id"]), False))]
 
     return render_template(
         "exam_review.html",
@@ -230,6 +240,7 @@ def review_exam():
         palette=palette,
         remaining_seconds=_remaining_seconds_from_session(),
         answered_indexes=answered_indexes,
+        flagged_indexes=flagged_indexes,
     )
 
 
@@ -274,6 +285,7 @@ def submit_test():
     for key in [
         "questions",
         "answers_map",
+        "answers",
         "flagged_map",
         "current_index",
         "question_set_id",
