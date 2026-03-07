@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block title %}Student Profile | Admin{% endblock %}
+{% block extra_head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+{% block content %}
+<div class="dashboard-layout">
+  <aside class="sidebar">
+    <h3>Admin Panel</h3>
+    <a class="side-link" href="{{ url_for('admin.admin_dashboard') }}">Dashboard</a>
+    <a class="side-link" href="{{ url_for('admin.admin_exams') }}">Question Management</a>
+    <a class="side-link" href="{{ url_for('admin.admin_students') }}">Student Management</a>
+    <a class="side-link" href="{{ url_for('auth.logout') }}">Logout</a>
+  </aside>
+
+  <section>
+    <h2 class="hero-title">Student Profile</h2>
+    <div class="stats-grid" style="grid-template-columns: repeat(4, minmax(0, 1fr));">
+      <article class="card stat-card card-hover"><div class="label">Total Exams Taken</div><div class="value">{{ analytics.total_exams_taken }}</div></article>
+      <article class="card stat-card card-hover"><div class="label">Average Score</div><div class="value">{{ analytics.average_score }}%</div></article>
+      <article class="card stat-card card-hover"><div class="label">Highest Score</div><div class="value">{{ analytics.highest_score }}%</div></article>
+      <article class="card stat-card card-hover"><div class="label">Lowest Score</div><div class="value">{{ analytics.lowest_score }}%</div></article>
+    </div>
+
+    <article class="card card-hover" style="margin-top:16px;">
+      <h3>Student Details</h3>
+      <p><strong>ID:</strong> {{ student.id }}</p>
+      <p><strong>Name:</strong> {{ student.first_name }} {{ student.last_name }}</p>
+      <p><strong>Email:</strong> {{ student.email }}</p>
+      <p><strong>Mobile Number:</strong> {{ student.mobile_number or '-' }}</p>
+      <p><strong>Gender:</strong> {{ student.gender or '-' }}</p>
+      <p><strong>Registration Date:</strong> {{ student.created_at.strftime('%d %b %Y, %I:%M %p') if student.created_at else '-' }}</p>
+    </article>
+
+    <article class="card card-hover" style="margin-top:16px;">
+      <h3>Score Trend</h3>
+      <canvas id="studentTrendChart" style="max-height: 240px;"></canvas>
+    </article>
+
+    <article class="card card-hover" style="margin-top:16px;">
+      <h3>Last 50 Exam Attempts</h3>
+      {% if attempts %}
+      <table class="list-table">
+        <thead>
+          <tr><th>Exam Name</th><th>Date</th><th>Score</th><th>Percentage</th><th>Result</th></tr>
+        </thead>
+        <tbody>
+          {% for attempt in attempts %}
+          <tr>
+            <td>{{ attempt.question_set.title if attempt.question_set else ('Exam ' ~ attempt.question_set_id) }}</td>
+            <td>{{ attempt.attempted_at.strftime('%d %b %Y, %I:%M %p') }}</td>
+            <td>{{ attempt.score }}/{{ attempt.total_questions }}</td>
+            <td>{{ attempt.percentage }}%</td>
+            <td>{{ 'Pass' if attempt.passed else 'Fail' }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <p>No exam attempts found.</p>
+      {% endif %}
+      <div style="margin-top:12px;">
+        <a class="btn btn-outline" href="{{ url_for('admin.admin_students') }}">Back to Students</a>
+      </div>
+    </article>
+  </section>
+</div>
+{% endblock %}
+{% block extra_scripts %}
+<script>
+  const chartData = {{ chart_data | tojson }};
+  const trendCanvas = document.getElementById('studentTrendChart');
+  if (trendCanvas && chartData?.labels?.length) {
+    new Chart(trendCanvas, {
+      type: 'line',
+      data: {
+        labels: chartData.labels,
+        datasets: [{
+          label: 'Score %',
+          data: chartData.scores,
+          borderColor: 'rgba(207, 31, 46, 1)',
+          backgroundColor: 'rgba(42, 79, 182, 0.16)',
+          fill: true,
+          tension: 0.3
+        }]
+      },
+      options: { responsive: true, maintainAspectRatio: false }
+    });
+  }
+</script>
+{% endblock %}
