@@ -23,6 +23,7 @@ a { color: inherit; text-decoration: none; }
 
 /* ===== Background animation layers (behind all content) ===== */
 .particles-layer,
+.wave-wrapper,
 .auth-gradient-layers,
 .background-shapes {
   position: fixed;
@@ -35,6 +36,40 @@ a { color: inherit; text-decoration: none; }
 /* Landing particles background */
 .particles-layer {
   background: radial-gradient(circle at 20% 20%, rgba(255,255,255,0.15), rgba(255,255,255,0.02));
+/* Ted McDo-inspired animated waves */
+.wave {
+  position: absolute;
+  left: -50%;
+  width: 200%;
+  height: 20em;
+  animation: wave 18s -3s linear infinite;
+  transform: translate3d(0, 0, 0);
+  opacity: 0.6;
+  bottom: 0;
+  border-radius: 42%;
+}
+.wave-top {
+  bottom: -10.5em;
+  background: rgba(255, 255, 255, 0.2);
+}
+.wave-middle {
+  bottom: -12.25em;
+  animation: wave 26s linear reverse infinite;
+  background: rgba(255, 255, 255, 0.28);
+  opacity: 0.55;
+}
+.wave-bottom {
+  bottom: -14em;
+  animation: wave 20s -1s reverse infinite;
+  background: rgba(255, 255, 255, 0.35);
+  opacity: 0.45;
+}
+@keyframes wave {
+  2% { transform: translateX(1); }
+  25% { transform: translateX(-25%); }
+  50% { transform: translateX(-50%); }
+  75% { transform: translateX(-25%); }
+  100% { transform: translateX(1); }
 }
 
 /* Mohaiman-inspired animated gradient layers */
