@@ -218,6 +218,9 @@ def review_exam():
             }
         )
 
+    answers_map = session.get("answers", {})
+    answered_indexes = [int(k) for k in answers_map.keys()]
+
     return render_template(
         "exam_review.html",
         total=total,
@@ -226,6 +229,7 @@ def review_exam():
         flagged=flagged,
         palette=palette,
         remaining_seconds=_remaining_seconds_from_session(),
+        answered_indexes=answered_indexes,
     )
 
 
