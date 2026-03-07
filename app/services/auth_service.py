@@ -27,22 +27,25 @@ def is_otp_expired(iso_value: str) -> bool:
 def send_otp_email(recipient_email: str, otp: int, purpose: str = "verification") -> bool:
     email_user = current_app.config.get("EMAIL_USER")
     email_pass = current_app.config.get("EMAIL_PASS")
+    smtp_host = current_app.config.get("SMTP_HOST", "smtp.gmail.com")
+    smtp_port = int(current_app.config.get("SMTP_PORT", 587))
+
     if not email_user or not email_pass:
-        return False
+        raise RuntimeError("EMAIL_USER/EMAIL_PASS is not configured")
 
     msg = MIMEText(f"Your OTP for {purpose} is: {otp}. This OTP expires in 10 minutes.")
     msg["Subject"] = f"Exam Portal {purpose.title()} OTP"
     msg["From"] = email_user
     msg["To"] = recipient_email
 
-    try:
-        with smtplib.SMTP(current_app.config.get("SMTP_HOST"), current_app.config.get("SMTP_PORT")) as server:
-            server.starttls()
-            server.login(email_user, email_pass)
-            server.sendmail(email_user, recipient_email, msg.as_string())
-        return True
-    except Exception:
-        return False
+    with smtplib.SMTP(smtp_host, smtp_port) as server:
+        server.ehlo()
+        server.starttls()
+        server.ehlo()
+        server.login(email_user, email_pass)
+        server.sendmail(email_user, recipient_email, msg.as_string())
+
+    return True
 
 
 def create_student(signup_data: dict) -> User:

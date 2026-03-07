@@ -8,9 +8,7 @@ bp = Blueprint("pages", __name__)
 
 @bp.route("/")
 def index():
-    if current_user.is_authenticated:
-        return redirect(url_for("student.home"))
-    return redirect(url_for("auth.login"))
+    return render_template("home.html")
 
 
 @bp.route("/about", endpoint="about")
